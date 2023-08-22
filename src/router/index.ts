@@ -16,17 +16,17 @@ const router = createRouter({
         {
           path: '/orders',
           name: 'orders',
-          component: () => import('@/views/pages/Orders.vue')
+          component: () => import('@/views/pages/OrdersPage.vue')
         },
         {
           path: '/order',
           name: 'order',
-          component: () => import('@/views/pages/Order.vue')
+          component: () => import('@/views/pages/OrderPage.vue')
         },
         {
           path: '/users',
           name: 'users',
-          component: () => import('@/views/pages/Order.vue')
+          component: () => import('@/views/pages/OrderPage.vue')
         }
       ]
     },
