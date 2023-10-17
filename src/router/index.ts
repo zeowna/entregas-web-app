@@ -1,5 +1,5 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
-import AppLayout from '@/layout/AppLayout.vue';
+import { createRouter, createWebHashHistory } from 'vue-router'
+import AppLayout from '@/layout/AppLayout.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -12,6 +12,31 @@ const router = createRouter({
           path: '/',
           name: 'dashboard',
           component: () => import('@/views/Dashboard.vue')
+        },
+        {
+          path: '/product-categories',
+          name: 'product-categories',
+          component: () => import('@/views/pages/ProductCategoriesPage.vue')
+        },
+        {
+          path: '/create-product-category',
+          name: 'product-category',
+          component: () => import('@/views/pages/ProductCategoryPage.vue')
+        },
+        {
+          path: '/edit-product-category/:id',
+          name: 'edit-product-category',
+          component: () => import('@/views/pages/ProductCategoryPage.vue')
+        },
+        {
+          path: '/products',
+          name: 'products',
+          component: () => import('@/views/pages/ProductsPage.vue')
+        },
+        {
+          path: '/products/:id',
+          name: 'product-detail',
+          component: () => import('@/views/pages/ProductPage.vue')
         },
         {
           path: '/orders',
@@ -39,7 +64,7 @@ const router = createRouter({
     {
       path: '/auth/login',
       name: 'login',
-      component: () => import('@/views/pages/auth/Login.vue')
+      component: () => import('@/views/pages/auth/SigninPage.vue')
     },
     {
       path: '/auth/access',
@@ -52,6 +77,6 @@ const router = createRouter({
       component: () => import('@/views/pages/auth/Error.vue')
     }
   ]
-});
+})
 
-export default router;
+export default router
