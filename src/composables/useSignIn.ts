@@ -57,7 +57,7 @@ export const useSignIn = () => {
       toast.add({
         severity: 'error',
         summary: 'Erro ao entrar',
-        detail: err?.response?.data?.message ?? err.message ?? 'Não foi possível realizar o login!',
+        detail: err?.response?.data.message ?? err?.message ?? 'Não foi possível realizar o login!',
         life: 5000
       })
     } finally {
