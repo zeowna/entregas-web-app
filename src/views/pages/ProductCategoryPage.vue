@@ -1,6 +1,6 @@
 <template>
   <div class="grid">
-    <div class="col-12">
+    <div class="sm:col-12 md:col-6">
       <div class="card p-fluid">
         <form @submit.prevent="saveProductCategory">
           <div class="grid">
@@ -16,6 +16,7 @@
               <FieldError :errors="v$.name.$errors" />
             </div>
           </div>
+
           <Button
             label="Salvar"
             type="submit"
@@ -25,96 +26,111 @@
         </form>
       </div>
     </div>
+
+    <div class="sm:col-12 md:col-6">
+      <div class="card p-fluid">
+        <div class="grid">
+          <div class="col">
+            <h5>Tamanho de Embalagem</h5>
+
+            <div class="grid">
+              <div class="md:col-4 sm:col-12">
+                <Button
+                  label="Criar Tamanho"
+                  v-show="!showCategoryForm"
+                  @click="showCategoryForm = !showCategoryForm"
+                />
+              </div>
+            </div>
+
+            <div class="grid" v-show="showCategoryForm">
+              <div class="col">
+                <form @submit.prevent="saveProductCategorySize">
+                  <div class="field col-6 pl-0">
+                    <label for="name">Nome</label>
+                    <InputText
+                      type="text"
+                      v-model="v$2.name.$model"
+                      id="name"
+                      :class="v$2.name.$error ? 'p-invalid' : ''"
+                      placeholder="Nome do Tamanho"
+                    />
+                    <FieldError :errors="v$2.name.$errors" />
+                  </div>
+
+                  <Button
+                    label="Salvar"
+                    type="submit"
+                    severity="success"
+                    :disabled="isLoadingSize || v$2.$error"
+                  />
+                </form>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="col-12">
+                <DataTable :value="data">
+                  <Column field="name" header="Nome"></Column>
+                  <Column field="createdAt" header="Data Criação">
+                    <template #body="slotProps">
+                      {{ new Date(slotProps.data.createdAt).toLocaleDateString() }} -
+                      {{ new Date(slotProps.data.createdAt).toLocaleTimeString() }}
+                    </template>
+                  </Column>
+                  <Column field="updatedAt" header="Data Edição">
+                    <template #body="slotProps">
+                      {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -
+                      {{ new Date(slotProps.data.updatedAt).toLocaleTimeString() }}
+                    </template>
+                  </Column>
+                  <Column field="Ações">
+                    <template #body="slotProps">
+                      <Button
+                        severity="success"
+                        v-tooltip="'Editar Tamanho'"
+                        :icon="PrimeIcons.PENCIL"
+                        @click="selectProductSize(slotProps.data)"
+                      />
+                    </template>
+                  </Column>
+                </DataTable>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { ProductCategory } from '@/services/api/types'
-import { Api } from '@/services/api/Api'
+import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import router from '@/router'
 import { useToast } from 'primevue/usetoast'
-import { useVuelidate } from '@vuelidate/core'
-import { helpers, required } from '@vuelidate/validators'
 import FieldError from '@/components/FieldError.vue'
+import { PrimeIcons } from 'primevue/api'
+import { useSaveProductCategory, useSaveProductCategorySizes } from '@/composables'
 
 const route = useRoute()
 const toast = useToast()
 
-const isLoading = ref(false)
-const productCategory = ref<ProductCategory>({
-  name: ''
-})
-
-const rules = computed(() => ({
-  name: { required: helpers.withMessage('Preencha o Nome da Categoria', required) }
-}))
-
-const v$ = useVuelidate(rules, productCategory)
-
-const findProductCategoryById = async (id: number) => {
-  isLoading.value = true
-  productCategory.value = await Api.productCategories.findById(id)
-  isLoading.value = false
-}
-
-const createProductCategory = async () => {
-  await Api.productCategories.create(productCategory.value)
-}
-
-const updateProductCategory = async () => {
-  await Api.productCategories.update(productCategory.value.id, productCategory.value)
-}
-
-const goToProductCategories = async () => {
-  toast.add({
-    severity: 'success',
-    summary: 'Sucesso',
-    detail: 'Categoria salva com sucesso',
-    life: 2000
-  })
-
-  await router.push({
-    name: 'product-categories'
-  })
-}
-
-const saveProductCategory = async () => {
-  try {
-    isLoading.value = true
-
-    productCategory.value.name = productCategory.value.name.trim()
-
-    const formValidation = await v$.value.$validate()
-
-    if (!formValidation) {
-      throw new Error(v$.value.$errors.map((e) => e.$message).join())
-    }
-
-    if (productCategory.value.id) {
-      await updateProductCategory()
-      await goToProductCategories()
-      return
-    }
-
-    await createProductCategory()
-    await goToProductCategories()
-  } catch (err) {
-    toast.add({
-      severity: 'error',
-      summary: 'Erro ao Salvar',
-      detail: err?.response?.data?.message ?? err.message ?? 'Não foi possível salvar a Categoria!',
-      life: 5000
-    })
-  } finally {
-    isLoading.value = false
-  }
-}
+const { isLoading, v$, findProductCategoryById, saveProductCategory } =
+  useSaveProductCategory(toast)
+const {
+  isLoading: isLoadingSize,
+  data,
+  v$: v$2,
+  findProductCategorySizes,
+  selectProductSize,
+  showCategoryForm,
+  saveProductCategorySize
+} = useSaveProductCategorySizes(toast)
 
 onMounted(async () => {
   if (route.params?.id) {
     await findProductCategoryById(+route.params?.id)
+    await findProductCategorySizes()
   }
 })
 </script>

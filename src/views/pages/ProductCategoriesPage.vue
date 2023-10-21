@@ -1,56 +1,20 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-import { Api } from '@/services/api/Api'
-import { FindEntitiesPaging, FindEntitiesResponse, ProductCategory } from '@/services/api/types'
-import { DataTablePageEvent } from 'primevue/datatable'
-import router from '@/router'
+import { onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
+import { useListProductCategories } from '@/composables'
 
-const data = ref<FindEntitiesResponse<ProductCategory>>({
-  list: [],
-  count: 0,
-  skip: 0,
-  limit: 0,
-  pages: 0
-})
-const isLoading = ref(false)
-
-const getProductCategories = async (params: FindEntitiesPaging = {}) => {
-  isLoading.value = true
-  data.value = await Api.productCategories.find(params)
-  isLoading.value = false
-}
-
-const onPage = async (e: DataTablePageEvent) => {
-  await getProductCategories({
-    skip: data.value.limit * e.page
-  })
-}
-
-const goToProductCategory = async (id?: number) => {
-  if (id) {
-    await router.push({
-      name: 'edit-product-category',
-      params: { id }
-    })
-
-    return
-  }
-
-  await router.push({
-    name: 'product-category'
-  })
-}
+const { isLoading, data, onPage, findProductCategories, goToProductCategory } =
+  useListProductCategories()
 
 onMounted(async () => {
-  await getProductCategories()
+  await findProductCategories()
 })
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
-      <Button label="Criar nova Categoria" @click="goToProductCategory()" />
+      <Button label="Criar Categoria" @click="goToProductCategory()" />
     </div>
   </div>
   <div class="grid">
@@ -62,7 +26,7 @@ onMounted(async () => {
           lazy
           paginator
           :first="0"
-          :rows="15"
+          :rows="data.limit"
           :totalRecords="data.count"
           :loading="isLoading"
           @page="onPage($event)"

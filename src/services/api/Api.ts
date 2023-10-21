@@ -5,7 +5,7 @@ import { PartnersResource } from './PartnersResource'
 import { OrdersResource } from './OrdersResource'
 import { CustomersResource } from './CustomersResource'
 import { store } from '@/store'
-import { ProductCategoriesResource } from '@/services/api/ProductCategoriesResource'
+import { ProductResource } from '@/services/api/ProductResource'
 
 export class Api {
   static client = computed(() => axios.create({ baseURL: store?.getters?.getBaseUrl }))
@@ -14,5 +14,5 @@ export class Api {
   static partners = new PartnersResource(Api.client)
   static orders = new OrdersResource(Api.client)
   static customers = new CustomersResource(Api.client)
-  static productCategories = new ProductCategoriesResource(Api.client)
+  static products = new ProductResource(Api.client)
 }

@@ -47,10 +47,15 @@ export abstract class AbstractResource<T extends Entity> {
   }
 
   async find(
-    { conditions = {}, skip = 0, limit = 15, sort = { createdAt: -1 } }: FindEntitiesPaging = {},
+    { conditions = {}, skip = 0, limit = 15, sort = { updatedAt: -1 } }: FindEntitiesPaging = {},
     url = this.url
   ) {
-    const response = await this.get<FindEntitiesResponse<T>>(url, { conditions, skip, limit, sort })
+    const response = await this.get<FindEntitiesResponse<T>>(url, {
+      conditions: JSON.stringify(conditions),
+      skip,
+      limit,
+      sort: JSON.stringify(sort)
+    })
 
     return response
   }
@@ -59,12 +64,12 @@ export abstract class AbstractResource<T extends Entity> {
     return this.get<T>(`${this.url}/${id}`)
   }
 
-  async create(entity: Entity) {
-    return this.post<T>(this.url, entity)
+  async create(entity: Entity, url?: string) {
+    return this.post<T>(url ?? this.url, entity)
   }
 
-  async update(id: number, entity: Entity) {
-    return this.patch<T>(`${this.url}/${id}`, entity)
+  async update(id: number, entity: Entity, url?: string) {
+    return this.patch<T>(url ?? `${this.url}/${id}`, entity)
   }
 
   private buildAuthorizationHeaders() {
