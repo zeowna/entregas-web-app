@@ -17,7 +17,7 @@ const adminMenu = [
   { separator: true },
   {
     label: 'Parceiros',
-    items: [{ label: 'Listar Parceiros', icon: 'pi pi-shopping-bag', to: '/products' }]
+    items: [{ label: 'Listar Parceiros', icon: 'pi pi-shopping-bag', to: '/partners' }]
   },
   { separator: true },
   {

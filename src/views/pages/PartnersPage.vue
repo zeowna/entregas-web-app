@@ -1,26 +1,27 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
-import { useListProductCategories } from '@/composables'
+import { useListPartners } from '@/composables'
+import { store } from '@/store'
+import { PartnerStatuses } from '@/services/api/types'
 
-const { isLoading, data, onPage, findProductCategories, goToProductCategory } =
-  useListProductCategories()
+const { isLoading, data, onPage, findPartners, goToPartner } = useListPartners()
 
 onMounted(async () => {
-  await findProductCategories()
+  await findPartners()
 })
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
-      <Button label="Criar Categoria" @click="goToProductCategory()" />
+      <Button label="Criar Parceiro" @click="goToPartner()" />
     </div>
   </div>
   <div class="grid">
     <div class="col-12">
       <div class="card">
-        <h5>Categorias</h5>
+        <h5>Lista de Parceiros</h5>
         <DataTable
           :value="data.list"
           lazy
@@ -31,7 +32,31 @@ onMounted(async () => {
           :loading="isLoading"
           @page="onPage($event)"
         >
+          <Column header="Foto">
+            <template #body="slotProps">
+              <img
+                v-if="slotProps.data.pictureURI"
+                :src="`${store.getters.getBaseUrl}/${slotProps.data.pictureURI}`"
+                class="w-6rem shadow-2 border-round"
+              />
+            </template>
+          </Column>
           <Column field="name" header="Nome"></Column>
+          <Column field="cnpj" header="CNPJ"></Column>
+          <Column header="Status">
+            <template #body="slotProps">
+              <Tag
+                v-if="slotProps.data.status === PartnerStatuses.Active"
+                value="Ativo"
+                severity="success"
+              />
+              <Tag
+                v-if="slotProps.data.status === PartnerStatuses.Inactive"
+                value="Inativo"
+                severity="danger"
+              />
+            </template>
+          </Column>
           <Column field="createdAt" header="Data Criação">
             <template #body="slotProps">
               {{ new Date(slotProps.data.createdAt).toLocaleDateString() }} -
@@ -48,9 +73,9 @@ onMounted(async () => {
             <template #body="slotProps">
               <Button
                 severity="success"
-                v-tooltip="'Editar Categoria'"
+                v-tooltip="'Editar Parceiro'"
                 :icon="PrimeIcons.PENCIL"
-                @click="goToProductCategory(slotProps.data.id)"
+                @click="goToPartner(slotProps.data.id)"
               />
             </template>
           </Column>

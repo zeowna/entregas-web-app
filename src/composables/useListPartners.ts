@@ -1,13 +1,13 @@
 import { ref } from 'vue'
-import { FindEntitiesPaging, FindEntitiesResponse, ProductCategory } from '@/services/api/types'
+import { FindEntitiesPaging, FindEntitiesResponse, Partner } from '@/services/api/types'
 import { Api } from '@/services/api/Api'
 import { DataTablePageEvent } from 'primevue/datatable'
 import router from '@/router'
 
-export const useListProductCategories = () => {
+export const useListPartners = () => {
   const limit = 25
 
-  const data = ref<FindEntitiesResponse<ProductCategory>>({
+  const data = ref<FindEntitiesResponse<Partner>>({
     list: [],
     count: 0,
     skip: 0,
@@ -16,23 +16,23 @@ export const useListProductCategories = () => {
   })
   const isLoading = ref(false)
 
-  const findProductCategories = async (params: FindEntitiesPaging = { limit }) => {
+  const findPartners = async (params: FindEntitiesPaging = { limit }) => {
     isLoading.value = true
-    data.value = await Api.products.categories.find(params)
+    data.value = await Api.partners.find(params)
     isLoading.value = false
   }
 
   const onPage = async (e: DataTablePageEvent) => {
-    await findProductCategories({
+    await findPartners({
       skip: data.value.limit * e.page,
       limit
     })
   }
 
-  const goToProductCategory = async (id?: number) => {
+  const goToPartner = async (id?: number) => {
     if (id) {
       await router.push({
-        name: 'edit-product-category',
+        name: 'edit-partner-category',
         params: { id }
       })
 
@@ -40,15 +40,15 @@ export const useListProductCategories = () => {
     }
 
     await router.push({
-      name: 'create-product-category'
+      name: 'create-partner-category'
     })
   }
 
   return {
     data,
     isLoading,
-    findProductCategories,
+    findPartners,
     onPage,
-    goToProductCategory
+    goToPartner
   }
 }

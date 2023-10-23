@@ -1,9 +1,15 @@
-import { Entity } from '@/services/api/types/Entity';
-import { Address } from '@/services/api/types/Address';
+import { Entity } from '@/services/api/types/Entity'
+import { Address } from '@/services/api/types/Address'
+
+export enum PartnerStatuses {
+  Active = 'active',
+  Inactive = 'inactive'
+}
 
 export interface Partner extends Entity {
-  name: string;
-  cnpj: string;
-  pictureURI?: string;
-  address: Address;
+  name: string
+  cnpj: string
+  status: PartnerStatuses
+  pictureURI?: string
+  address: Address
 }

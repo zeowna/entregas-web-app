@@ -46,6 +46,22 @@ export abstract class AbstractResource<T extends Entity> {
     }
   }
 
+  async postMultipart<R = T>(uri: string, base64: string, headers = {}) {
+    const { data } = await this.client.value.postForm<R>(
+      uri,
+      {
+        file: base64
+      },
+      {
+        headers: {
+          ...this.buildAuthorizationHeaders(),
+          ...headers,
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    )
+  }
+
   async find(
     { conditions = {}, skip = 0, limit = 15, sort = { updatedAt: -1 } }: FindEntitiesPaging = {},
     url = this.url

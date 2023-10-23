@@ -39,6 +39,7 @@
                   label="Criar Tamanho"
                   v-show="!showCategoryForm"
                   @click="showCategoryForm = !showCategoryForm"
+                  :disabled="!productCategory.id"
                 />
               </div>
             </div>
@@ -115,7 +116,7 @@ import { useSaveProductCategory, useSaveProductCategorySizes } from '@/composabl
 const route = useRoute()
 const toast = useToast()
 
-const { isLoading, v$, findProductCategoryById, saveProductCategory } =
+const { isLoading, productCategory, v$, findProductCategoryById, saveProductCategory, reset } =
   useSaveProductCategory(toast)
 const {
   isLoading: isLoadingSize,
@@ -124,10 +125,14 @@ const {
   findProductCategorySizes,
   selectProductSize,
   showCategoryForm,
-  saveProductCategorySize
+  saveProductCategorySize,
+  reset: resetProductcategorySize
 } = useSaveProductCategorySizes(toast)
 
 onMounted(async () => {
+  reset()
+  resetProductcategorySize()
+
   if (route.params?.id) {
     await findProductCategoryById(+route.params?.id)
     await findProductCategorySizes()

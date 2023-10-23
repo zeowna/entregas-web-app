@@ -14,6 +14,13 @@ const productCategorySize = ref<ProductCategorySize>({
   name: ''
 })
 
+const reset = () => {
+  isLoading.value = false
+  productCategory.value = {
+    name: ''
+  }
+}
+
 const data = ref<ProductCategorySize[]>([])
 
 const rulesProductCategory = computed(() => ({
@@ -22,10 +29,10 @@ const rulesProductCategory = computed(() => ({
 
 const v$ = useVuelidate(rulesProductCategory, productCategorySize)
 
-const findProductCategorySizes = async () => {
+const findProductCategorySizes = async (id?: number) => {
   isLoading.value = true
   data.value = await Api.products.categories.sizes.findByCategoryId(
-    productCategory.value.id as number
+    id ?? (productCategory.value.id as number)
   )
   isLoading.value = false
 }
@@ -88,6 +95,7 @@ export const useSaveProductCategorySizes = (toast: ToastServiceMethods) => {
     v$,
     findProductCategorySizes,
     selectProductSize,
-    saveProductCategorySize: saveProductCategorySize(toast)
+    saveProductCategorySize: saveProductCategorySize(toast),
+    reset
   }
 }

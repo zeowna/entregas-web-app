@@ -1,3 +1,3 @@
-export * from './badRequestError'
+export * from './BadRequestError'
 export * from './NotFoundError'
 export * from './ValidationError'

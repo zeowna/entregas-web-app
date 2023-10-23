@@ -4,7 +4,7 @@ import { Api } from '@/services/api/Api'
 import { DataTablePageEvent } from 'primevue/datatable'
 import router from '@/router'
 
-export const useListProductCategories = () => {
+export const useListProducts = () => {
   const limit = 25
 
   const data = ref<FindEntitiesResponse<ProductCategory>>({
@@ -16,23 +16,23 @@ export const useListProductCategories = () => {
   })
   const isLoading = ref(false)
 
-  const findProductCategories = async (params: FindEntitiesPaging = { limit }) => {
+  const findProducts = async (params: FindEntitiesPaging = { limit }) => {
     isLoading.value = true
-    data.value = await Api.products.categories.find(params)
+    data.value = await Api.products.find(params)
     isLoading.value = false
   }
 
   const onPage = async (e: DataTablePageEvent) => {
-    await findProductCategories({
+    await findProducts({
       skip: data.value.limit * e.page,
       limit
     })
   }
 
-  const goToProductCategory = async (id?: number) => {
+  const goToProduct = async (id?: number) => {
     if (id) {
       await router.push({
-        name: 'edit-product-category',
+        name: 'edit-product',
         params: { id }
       })
 
@@ -40,15 +40,15 @@ export const useListProductCategories = () => {
     }
 
     await router.push({
-      name: 'create-product-category'
+      name: 'create-product'
     })
   }
 
   return {
     data,
     isLoading,
-    findProductCategories,
+    findProducts,
     onPage,
-    goToProductCategory
+    goToProduct
   }
 }

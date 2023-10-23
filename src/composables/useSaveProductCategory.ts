@@ -5,11 +5,19 @@ import { useVuelidate } from '@vuelidate/core'
 import { Api } from '@/services/api/Api'
 import router from '@/router'
 import { ToastServiceMethods } from 'primevue/toastservice'
+import { NotFoundError } from '@/services/api/errors'
 
 const isLoading = ref(false)
 const productCategory = ref<ProductCategory>({
   name: ''
 })
+
+const reset = () => {
+  isLoading.value = false
+  productCategory.value = {
+    name: ''
+  }
+}
 
 const rules = computed(() => ({
   name: { required: helpers.withMessage('Preencha o Nome da Categoria', required) }
@@ -18,9 +26,17 @@ const rules = computed(() => ({
 const v$ = useVuelidate(rules, productCategory)
 
 const findProductCategoryById = async (id: number) => {
-  isLoading.value = true
-  productCategory.value = await Api.products.categories.findById(id)
-  isLoading.value = false
+  try {
+    isLoading.value = true
+    productCategory.value = await Api.products.categories.findById(id)
+    isLoading.value = false
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      await router.push({ name: 'create-product-category' })
+    }
+
+    throw err
+  }
 }
 
 const createProductCategory = async () => {
@@ -82,6 +98,7 @@ export const useSaveProductCategory = (toast: ToastServiceMethods) => {
     productCategory,
     v$,
     findProductCategoryById,
-    saveProductCategory: saveProductCategory(toast)
+    saveProductCategory: saveProductCategory(toast),
+    reset
   }
 }

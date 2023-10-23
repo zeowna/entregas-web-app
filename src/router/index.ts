@@ -18,33 +18,57 @@ const router = createRouter({
         },
         {
           path: '/product-categories',
-          name: 'product-categories',
+          name: 'list-product-categories',
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/ProductCategoriesPage.vue')
         },
         {
-          path: '/create-product-category',
-          name: 'product-category',
-          meta: { requiresAuth: true },
-          component: () => import('@/views/pages/ProductCategoryPage.vue')
-        },
-        {
-          path: '/edit-product-category/:id',
+          path: '/product-category/update/:id',
           name: 'edit-product-category',
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/ProductCategoryPage.vue')
         },
         {
+          path: '/product-categories/create',
+          name: 'create-product-category',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/ProductCategoryPage.vue')
+        },
+        {
           path: '/products',
-          name: 'products',
+          name: 'list-products',
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/ProductsPage.vue')
         },
         {
-          path: '/products/:id',
-          name: 'product-detail',
+          path: '/products/create',
+          name: 'create-product',
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/ProductPage.vue')
+        },
+        {
+          path: '/products/update/:id',
+          name: 'edit-product',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/ProductPage.vue')
+        },
+        {
+          path: '/partners',
+          name: 'list-partners',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnersPage.vue')
+        },
+        {
+          path: '/partners/create',
+          name: 'create-partner',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnerPage.vue')
+        },
+        {
+          path: '/partners/update/:id',
+          name: 'edit-partner',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnerPage.vue')
         },
         {
           path: '/orders',

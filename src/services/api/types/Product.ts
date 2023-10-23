@@ -8,12 +8,9 @@ export enum ProductStatus {
 
 export interface Product extends Entity {
   name: string
-
+  categoryId?: number
   category: ProductCategory
-
   size: string
-
   status: ProductStatus
-
   pictureURI?: string
 }
