@@ -23,6 +23,7 @@
                   v-model="v$.cnpj.$model"
                   id="name"
                   mask="99.999.999/9999-99"
+                  unmask
                   placeholder="CNPJ do Parceiro"
                 />
                 <FieldError :errors="v$.cnpj.$errors" />
@@ -62,6 +63,7 @@
                   v-model="v$.address.cep.$model"
                   id="cep"
                   mask="99999-999"
+                  unmask
                   placeholder="CEP do Parceiro"
                   @blur="loadAddress"
                 />
@@ -93,10 +95,10 @@
 
               <div class="field md:col-4 sm:col-12">
                 <label for="size">Número</label>
-                <InputText
-                  type="number"
+                <InputNumber
                   v-model="v$.address.number.$model"
                   id="number"
+                  :useGrouping="false"
                   placeholder="Número do Parceiro"
                 />
                 <FieldError :errors="v$.address.number.$errors" />
@@ -141,16 +143,69 @@
           </Fieldset>
 
           <div class="grid">
+            <div class="field md:col-9 sm:col-12">
+              <Fieldset legend="Usuário">
+                <div class="grid">
+                  <div class="field md:col-6 sm:col-12">
+                    <label for="size">Nome</label>
+                    <InputText
+                      type="text"
+                      v-model="v$User.name.$model"
+                      id="state"
+                      placeholder="Nome do Usuário"
+                      :disabled="!!partner.id"
+                    />
+                    <FieldError :errors="v$User.name.$errors" />
+                  </div>
+                  <div class="field md:col-6 sm:col-12">
+                    <label for="size">E-mail</label>
+                    <InputText
+                      type="text"
+                      v-model="v$User.email.$model"
+                      id="state"
+                      placeholder="E-mail do Usuário"
+                      :disabled="!!partner.id"
+                    />
+                    <FieldError :errors="v$User.email.$errors" />
+                  </div>
+                  <div class="field md:col-6 sm:col-12">
+                    <label for="size">Data de nascimento</label>
+
+                    <Calendar
+                      v-model="v$User.birthday.$model"
+                      placeholder="Data de nascimento do Parceiro"
+                      dateFormat="dd/mm/yy"
+                      :disabled="!!partner.id"
+                    />
+
+                    <FieldError :errors="v$User.birthday.$errors" />
+                  </div>
+                  <div class="field md:col-6 sm:col-12">
+                    <label for="size">CPF</label>
+                    <InputText
+                      type="text"
+                      v-model="v$User.cpf.$model"
+                      id="state"
+                      placeholder="CPF do Usuário"
+                      :disabled="!!partner.id"
+                    />
+                    <FieldError :errors="v$User.cpf.$errors" />
+                  </div>
+                </div>
+              </Fieldset>
+            </div>
             <div class="field md:col-3 sm:col-12">
               <Fieldset legend="Foto">
                 <img
-                  v-if="partner.pictureURI"
+                  v-if="partner.pictureURI && !temporaryPicture"
                   :src="`${store.getters.getBaseUrl}/${partner.pictureURI}`"
                   class="product-img pb-5"
                 />
+                <img v-if="temporaryPicture" :src="temporaryPicture" class="product-img pb-5" />
                 <div class="text-center">
                   <FileUpload
                     mode="basic"
+                    auto
                     name="demo[]"
                     accept="image/*"
                     :url="undefined"
@@ -158,6 +213,7 @@
                     @select="onFileSelection"
                     customUpload
                     chooseLabel="Carregar Foto do Parceiro"
+                    upload-label=""
                   />
                 </div>
               </Fieldset>
@@ -176,9 +232,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { FileUploadSelectEvent } from 'primevue/fileupload'
-import { useFindAddress, useSavePartner } from '@/composables'
+import { useFindAddress, userSavePartnerUser, useSavePartner } from '@/composables'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
 import { useRoute } from 'vue-router'
@@ -187,8 +243,11 @@ import { store } from '@/store'
 const route = useRoute()
 const toast = useToast()
 
-const { isLoading, v$, partner, savePartner, base64data, findPartnerById, reset } =
-  useSavePartner(toast)
+const temporaryPicture = ref('')
+const date = ref<Date>()
+
+const { isLoading, v$, partner, savePartner, file, findPartnerById, reset } = useSavePartner(toast)
+const { reset: resetPartnerUser, v$: v$User } = userSavePartnerUser(toast)
 
 const { findAddressByCep } = useFindAddress()
 
@@ -206,14 +265,15 @@ const loadAddress = async () => {
 }
 
 const onFileSelection = async (e: FileUploadSelectEvent) => {
-  const file = e.files[0]
+  const [selectedFile] = e.files
+  temporaryPicture.value = selectedFile.objectURL
 
-  partner.value.pictureURI = file.objectURL
-  base64data.value = file
+  file.value = selectedFile
 }
 
 onMounted(async () => {
   reset()
+  resetPartnerUser()
 
   if (route.params?.id) {
     await findPartnerById(+route.params?.id)

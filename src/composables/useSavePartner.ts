@@ -6,6 +6,9 @@ import { Api } from '@/services/api/Api'
 import router from '@/router'
 import { ToastServiceMethods } from 'primevue/toastservice'
 import { NotFoundError } from '@/services/api/errors'
+import { userSavePartnerUser } from '@/composables/userSavePartnerUser'
+
+const { partnerUser, findPartnerPartnerId, savePartnerUser } = userSavePartnerUser()
 
 const isLoading = ref(false)
 const partner = ref<Partner>({
@@ -24,20 +27,20 @@ const partner = ref<Partner>({
   }
 })
 
-const base64data = ref<string | ArrayBuffer | null>(null)
+const file = ref<File | null>(null)
 
 const rules = computed(() => ({
-  name: { required: helpers.withMessage('Preencha o Nome do Parceiro', required) },
-  cnpj: { required: helpers.withMessage('Preencha o CNPJ do Parceiro', required) },
-  status: { required: helpers.withMessage('Preencha o CNPJ do Parceiro', required) },
+  name: { required: helpers.withMessage('Nome é obrigatório', required) },
+  cnpj: { required: helpers.withMessage('CNPJ é obrigatório', required) },
+  status: { required: helpers.withMessage('Status é obrigatório', required) },
   address: {
-    cep: { required: helpers.withMessage('Preencha o CEP do Parceiro', required) },
+    cep: { required: helpers.withMessage('CEP é obrigatório', required) },
     street: { required: helpers.withMessage('Preencha a Rua do Parceiro', required) },
-    neighbourhood: { required: helpers.withMessage('Preencha o Número do Parceiro', required) },
-    number: { required: helpers.withMessage('Preencha o Número do Parceiro', required) },
-    complement: { required: helpers.withMessage('Preencha o Complemento do Parceiro', required) },
+    neighbourhood: { required: helpers.withMessage('Número é obrigatório', required) },
+    number: { required: helpers.withMessage('Número é obrigatório', required) },
+    complement: {},
     city: { required: helpers.withMessage('Preencha a Cidade do Parceiro', required) },
-    state: { required: helpers.withMessage('Preencha o UF do Parceiro', required) }
+    state: { required: helpers.withMessage('UF é obrigatório', required) }
   }
 }))
 
@@ -59,13 +62,29 @@ const reset = () => {
       state: ''
     }
   }
+
+  file.value = null
   v$.value.$reset()
 }
 
 const findPartnerById = async (id: number) => {
   try {
     isLoading.value = true
-    partner.value = await Api.partners.findById(id)
+    const found = await Api.partners.findById(id)
+
+    partner.value = {
+      ...partner.value,
+      ...found,
+      address: found.address ?? partner.value.address
+    }
+
+    try {
+      await findPartnerPartnerId(partner.value?.id as number)
+      partnerUser.value.partnerId = partner.value.id
+    } catch (_) {
+      console.log('PartnerUser not found')
+    }
+
     isLoading.value = false
   } catch (err) {
     if (err instanceof NotFoundError) {
@@ -77,12 +96,15 @@ const findPartnerById = async (id: number) => {
 }
 
 const uploadPicture = async () => {
-  await Api.partners.uploadPicture(partner.value!.id, base64data.value)
+  await Api.partners.uploadPicture(partner.value.id as number, file.value as File)
 }
 const createPartner = async () => {
   partner.value = await Api.partners.create(partner.value)
+  partnerUser.value.partnerId = partner.value.id
 
-  if (base64data.value) {
+  await savePartnerUser()
+
+  if (file.value) {
     await uploadPicture()
   }
 }
@@ -90,7 +112,7 @@ const createPartner = async () => {
 const updatePartner = async () => {
   partner.value = await Api.partners.update(partner.value!.id as number, partner.value)
 
-  if (base64data.value) {
+  if (file.value) {
     await uploadPicture()
   }
 }
@@ -143,8 +165,8 @@ const savePartner = (toast: ToastServiceMethods) => async () => {
 export const useSavePartner = (toast: ToastServiceMethods) => {
   return {
     isLoading,
-    partner: partner,
-    base64data,
+    partner,
+    file,
     v$,
     findPartnerById,
     savePartner: savePartner(toast),

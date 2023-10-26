@@ -20,7 +20,7 @@ const reset = () => {
 }
 
 const rules = computed(() => ({
-  name: { required: helpers.withMessage('Preencha o Nome da Categoria', required) }
+  name: { required: helpers.withMessage('Nome é obrigatório', required) }
 }))
 
 const v$ = useVuelidate(rules, productCategory)

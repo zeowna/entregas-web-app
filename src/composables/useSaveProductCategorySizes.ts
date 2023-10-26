@@ -24,7 +24,7 @@ const reset = () => {
 const data = ref<ProductCategorySize[]>([])
 
 const rulesProductCategory = computed(() => ({
-  name: { required: helpers.withMessage('Preencha o Nome do Tamanho da Embalagem', required) }
+  name: { required: helpers.withMessage('Nome é obrigatório', required) }
 }))
 
 const v$ = useVuelidate(rulesProductCategory, productCategorySize)

@@ -46,11 +46,11 @@ export abstract class AbstractResource<T extends Entity> {
     }
   }
 
-  async postMultipart<R = T>(uri: string, base64: string, headers = {}) {
+  async postMultipart<R = T>(uri: string, file: File, headers = {}) {
     const { data } = await this.client.value.postForm<R>(
       uri,
       {
-        file: base64
+        file: file
       },
       {
         headers: {
@@ -60,6 +60,8 @@ export abstract class AbstractResource<T extends Entity> {
         }
       }
     )
+
+    return data
   }
 
   async find(
@@ -76,8 +78,8 @@ export abstract class AbstractResource<T extends Entity> {
     return response
   }
 
-  async findById(id: number) {
-    return this.get<T>(`${this.url}/${id}`)
+  async findById(id: number, url?: string) {
+    return this.get<T>(`${url ?? this.url}/${id}`)
   }
 
   async create(entity: Entity, url?: string) {

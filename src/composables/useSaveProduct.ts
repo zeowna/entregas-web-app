@@ -19,10 +19,10 @@ const product = ref<Product>({
 const base64data = ref<string | ArrayBuffer | null>(null)
 
 const rules = computed(() => ({
-  name: { required: helpers.withMessage('Preencha o Nome do Produto', required) },
-  categoryId: { required: helpers.withMessage('Selecione a Categoria do Produto', required) },
-  size: { required: helpers.withMessage('Selecione o Tamanho do Produto', required) },
-  status: { required: helpers.withMessage('Selecione o Status do Produto', required) }
+  name: { required: helpers.withMessage('Nome é obrigatório', required) },
+  categoryId: { required: helpers.withMessage('Categoria é obrigatório', required) },
+  size: { required: helpers.withMessage('Tamanho é obrigatório', required) },
+  status: { required: helpers.withMessage('Status é obrigatório', required) }
 }))
 
 const v$ = useVuelidate(rules, product)
@@ -121,7 +121,7 @@ export const useSaveProduct = (toast: ToastServiceMethods) => {
   return {
     isLoading,
     product,
-    base64data,
+    base64data: file,
     v$,
     findProductById,
     saveProduct: saveProduct(toast),

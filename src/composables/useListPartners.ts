@@ -32,7 +32,7 @@ export const useListPartners = () => {
   const goToPartner = async (id?: number) => {
     if (id) {
       await router.push({
-        name: 'edit-partner-category',
+        name: 'edit-partner',
         params: { id }
       })
 
@@ -40,7 +40,7 @@ export const useListPartners = () => {
     }
 
     await router.push({
-      name: 'create-partner-category'
+      name: 'create-partner'
     })
   }
 

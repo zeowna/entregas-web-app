@@ -42,7 +42,11 @@ onMounted(async () => {
             </template>
           </Column>
           <Column field="name" header="Nome"></Column>
-          <Column field="cnpj" header="CNPJ"></Column>
+          <Column header="Endereço">
+            <template #body="slotProps">
+              {{ slotProps.data?.address?.street }} {{ slotProps.data?.address?.number }}
+            </template>
+          </Column>
           <Column header="Status">
             <template #body="slotProps">
               <Tag
