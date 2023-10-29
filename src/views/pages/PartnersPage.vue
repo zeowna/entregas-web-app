@@ -61,12 +61,6 @@ onMounted(async () => {
               />
             </template>
           </Column>
-          <Column field="createdAt" header="Data Criação">
-            <template #body="slotProps">
-              {{ new Date(slotProps.data.createdAt).toLocaleDateString() }} -
-              {{ new Date(slotProps.data.createdAt).toLocaleTimeString() }}
-            </template>
-          </Column>
           <Column field="updatedAt" header="Data Edição">
             <template #body="slotProps">
               {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -

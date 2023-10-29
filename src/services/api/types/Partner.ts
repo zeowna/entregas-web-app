@@ -9,6 +9,8 @@ export enum PartnerStatuses {
 export interface Partner extends Entity {
   name: string
   cnpj: string
+  openingHours: string
+  closingHours: string
   status: PartnerStatuses
   pictureURI?: string
   address: Address

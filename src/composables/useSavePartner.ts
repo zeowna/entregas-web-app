@@ -6,15 +6,14 @@ import { Api } from '@/services/api/Api'
 import router from '@/router'
 import { ToastServiceMethods } from 'primevue/toastservice'
 import { NotFoundError } from '@/services/api/errors'
-import { userSavePartnerUser } from '@/composables/userSavePartnerUser'
-
-const { partnerUser, findPartnerPartnerId, savePartnerUser } = userSavePartnerUser()
 
 const isLoading = ref(false)
 const partner = ref<Partner>({
   name: '',
   cnpj: '',
   pictureURI: '',
+  openingHours: '07:00',
+  closingHours: '18:00',
   status: PartnerStatuses.Active,
   address: {
     cep: '',
@@ -32,6 +31,10 @@ const file = ref<File | null>(null)
 const rules = computed(() => ({
   name: { required: helpers.withMessage('Nome é obrigatório', required) },
   cnpj: { required: helpers.withMessage('CNPJ é obrigatório', required) },
+  openingHours: { required: helpers.withMessage('Horário de abertura é obrigatório', required) },
+  closingHours: {
+    required: helpers.withMessage('Horário de encerramento é obrigatório', required)
+  },
   status: { required: helpers.withMessage('Status é obrigatório', required) },
   address: {
     cep: { required: helpers.withMessage('CEP é obrigatório', required) },
@@ -50,6 +53,8 @@ const reset = () => {
   partner.value = {
     name: '',
     cnpj: '',
+    openingHours: '07:00',
+    closingHours: '18:00',
     pictureURI: '',
     status: PartnerStatuses.Active,
     address: {
@@ -78,13 +83,6 @@ const findPartnerById = async (id: number) => {
       address: found.address ?? partner.value.address
     }
 
-    try {
-      await findPartnerPartnerId(partner.value?.id as number)
-      partnerUser.value.partnerId = partner.value.id
-    } catch (_) {
-      console.log('PartnerUser not found')
-    }
-
     isLoading.value = false
   } catch (err) {
     if (err instanceof NotFoundError) {
@@ -99,10 +97,13 @@ const uploadPicture = async () => {
   await Api.partners.uploadPicture(partner.value.id as number, file.value as File)
 }
 const createPartner = async () => {
-  partner.value = await Api.partners.create(partner.value)
-  partnerUser.value.partnerId = partner.value.id
+  const created = await Api.partners.create(partner.value)
 
-  await savePartnerUser()
+  partner.value = {
+    ...partner.value,
+    ...created,
+    address: partner.value.address ?? created.address
+  }
 
   if (file.value) {
     await uploadPicture()
@@ -110,7 +111,32 @@ const createPartner = async () => {
 }
 
 const updatePartner = async () => {
-  partner.value = await Api.partners.update(partner.value!.id as number, partner.value)
+  const updated = await Api.partners.update(partner.value!.id as number, partner.value)
+
+  partner.value = {
+    ...partner.value,
+    ...updated,
+    address: partner.value.address ?? updated.address
+  }
+
+  if (file.value) {
+    await uploadPicture()
+  }
+}
+
+const createAddress = async () => {
+  partner.value.address = await Api.partners.addresses.createPartnerUser(
+    partner.value.id as number,
+    partner.value.address
+  )
+}
+
+const updateAddress = async () => {
+  partner.value.address = await Api.partners.addresses.updatePartnerUser(
+    partner.value.id as number,
+    partner.value.address.id as number,
+    partner.value.address
+  )
 
   if (file.value) {
     await uploadPicture()
@@ -144,11 +170,13 @@ const savePartner = (toast: ToastServiceMethods) => async () => {
 
     if (partner.value.id) {
       await updatePartner()
+      await updateAddress()
       await goToPartners(toast)
       return
     }
 
     await createPartner()
+    await createAddress()
     await goToPartners(toast)
   } catch (err) {
     toast.add({
