@@ -70,6 +70,26 @@ const router = createRouter({
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/PartnerPage.vue')
         },
+
+        {
+          path: '/partners/:partnerId/users',
+          name: 'list-partner-users',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnerUsersPage.vue')
+        },
+        {
+          path: '/partners/:partnerId/users/create',
+          name: 'create-partner-user',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnerUserPage.vue')
+        },
+        {
+          path: '/partners/:partnerId/users/update/:id',
+          name: 'edit-partner-user',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnerUserPage.vue')
+        },
+
         {
           path: '/orders',
           name: 'orders',

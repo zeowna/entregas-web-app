@@ -125,14 +125,14 @@ const updatePartner = async () => {
 }
 
 const createAddress = async () => {
-  partner.value.address = await Api.partners.addresses.createPartnerUser(
+  partner.value.address = await Api.partners.addresses.createAddress(
     partner.value.id as number,
     partner.value.address
   )
 }
 
 const updateAddress = async () => {
-  partner.value.address = await Api.partners.addresses.updatePartnerUser(
+  partner.value.address = await Api.partners.addresses.updateAddress(
     partner.value.id as number,
     partner.value.address.id as number,
     partner.value.address

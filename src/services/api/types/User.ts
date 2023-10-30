@@ -8,7 +8,7 @@ export enum UserTypes {
 
 export interface User extends Entity {
   name: string
-  birthday: Date | null
+  birthday: Date | string | null
   cpf: string
   email: string
   password: string

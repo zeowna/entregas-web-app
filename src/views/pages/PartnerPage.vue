@@ -6,6 +6,7 @@
         severity="info"
         icon="pi pi-users"
         v-tooltip="`Visualizar Usuários deste Parceiro`"
+        @click="goToPartnerUsers"
       />
     </div>
   </div>
@@ -212,9 +213,10 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useFindAddress, useSavePartner } from '@/composables'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { store } from '@/store'
 
+const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 
@@ -240,6 +242,15 @@ const onFileSelection = async (e: FileUploadSelectEvent) => {
   temporaryPicture.value = selectedFile.objectURL
 
   file.value = selectedFile
+}
+
+const goToPartnerUsers = async () => {
+  await router.push({
+    name: 'list-partner-users',
+    params: {
+      partnerId: partner.value.id as number
+    }
+  })
 }
 
 onMounted(async () => {

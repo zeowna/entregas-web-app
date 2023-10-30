@@ -6,6 +6,7 @@ import { ToastServiceMethods } from 'primevue/toastservice'
 import { NotFoundError } from '@/services/api/errors'
 import router from '@/router'
 import { useVuelidate } from '@vuelidate/core'
+import { DateTime } from 'luxon'
 
 const isLoading = ref(false)
 const partnerUser = ref<PartnerUser>({
@@ -17,6 +18,7 @@ const partnerUser = ref<PartnerUser>({
   profilePictureURI: '',
   partnerId: null
 })
+const eighteenYearsAgo = computed(() => DateTime.now().minus({ years: 18 }).toJSDate())
 
 const file = ref<File | null>(null)
 
@@ -44,11 +46,20 @@ const reset = () => {
   v$.value.$reset()
 }
 
-const findPartnerPartnerId = async (partnerId: number) => {
+const uploadPicture = async () => {
+  await Api.partners.users.uploadPicture(
+    partnerUser.value.partnerId as number,
+    partnerUser.value.id as number,
+    file.value as File
+  )
+}
+
+const findByPartnerIdAndId = async (partnerId: number, id: number) => {
   try {
     isLoading.value = true
-    partnerUser.value = await Api.partners.users.findByPartnerId(partnerId)
-    partnerUser.value.partnerId = partnerUser.value.partner.id
+    partnerUser.value = await Api.partners.users.findByPartnerIdAndId(partnerId, id)
+    partnerUser.value.partnerId = partnerUser.value.partner?.id
+    partnerUser.value.birthday = new Date(partnerUser.value.birthday as unknown as string)
 
     isLoading.value = false
   } catch (err) {
@@ -62,6 +73,8 @@ const findPartnerPartnerId = async (partnerId: number) => {
 
 const createPartnerUser = async () => {
   partnerUser.value = await Api.partners.users.create(partnerUser.value)
+  partnerUser.value.partnerId = partnerUser.value.partner?.id
+  partnerUser.value.birthday = new Date(partnerUser.value.birthday as unknown as string)
 
   if (file.value) {
     await uploadPicture()
@@ -73,10 +86,26 @@ const updatePartnerUser = async () => {
     partnerUser.value!.id as number,
     partnerUser.value
   )
+  partnerUser.value.partnerId = partnerUser.value.partner?.id
+  partnerUser.value.birthday = new Date(partnerUser.value.birthday as unknown as string)
 
   if (file.value) {
     await uploadPicture()
   }
+}
+
+const goToPartnerUsers = async (toast: ToastServiceMethods) => {
+  toast.add({
+    severity: 'success',
+    summary: 'Sucesso',
+    detail: 'Usuário salvo com sucesso',
+    life: 2000
+  })
+
+  await router.push({
+    name: 'list-partner-users',
+    params: { partnerId: partnerUser.value.partnerId }
+  })
 }
 
 const savePartnerUser = (toast?: ToastServiceMethods) => async () => {
@@ -93,10 +122,12 @@ const savePartnerUser = (toast?: ToastServiceMethods) => async () => {
 
     if (partnerUser.value.id) {
       await updatePartnerUser()
+      await goToPartnerUsers(toast)
       return
     }
 
     await createPartnerUser()
+    await goToPartnerUsers(toast)
   } catch (err) {
     toast?.add({
       severity: 'error',
@@ -113,9 +144,10 @@ export const userSavePartnerUser = (toast?: ToastServiceMethods) => {
   return {
     isLoading,
     partnerUser,
+    eighteenYearsAgo,
     file,
     v$,
-    findPartnerPartnerId,
+    findByPartnerIdAndId,
     savePartnerUser: savePartnerUser(toast),
     reset
   }
