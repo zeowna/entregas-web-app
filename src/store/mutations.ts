@@ -9,7 +9,7 @@ export enum MutationTypes {
 
 export type Mutations<S = AppState> = {
   [MutationTypes.SET_USER](state: S, payload: User): void
-  [MutationTypes.SET_TOKEN](state: S, token: String): void
+  [MutationTypes.SET_TOKEN](state: S, token: string): void
 }
 
 export const mutations: MutationTree<AppState> & Mutations = {

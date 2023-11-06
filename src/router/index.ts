@@ -17,6 +17,31 @@ const router = createRouter({
           component: () => import('@/views/Dashboard.vue')
         },
         {
+          path: '/my-data',
+          name: 'my-data',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/MyDataPage.vue')
+        },
+        {
+          path: '/admin/users',
+          name: 'list-admin-users',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/AdminUsersPage.vue')
+        },
+        {
+          path: '/admin/users/create',
+          name: 'create-admin-user',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/AdminUserPage.vue')
+        },
+        {
+          path: '/admin/users/update/:id',
+          name: 'edit-admin-user',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/AdminUserPage.vue')
+        },
+
+        {
           path: '/product-categories',
           name: 'list-product-categories',
           meta: { requiresAuth: true },
@@ -70,7 +95,6 @@ const router = createRouter({
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/PartnerPage.vue')
         },
-
         {
           path: '/partners/:partnerId/users',
           name: 'list-partner-users',
@@ -89,7 +113,6 @@ const router = createRouter({
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/PartnerUserPage.vue')
         },
-
         {
           path: '/orders',
           name: 'orders',

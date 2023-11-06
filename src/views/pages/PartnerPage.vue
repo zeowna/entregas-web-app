@@ -1,6 +1,6 @@
 <template>
   <div class="grid" v-if="partner.id">
-    <div class="md:col-4 sm:col-12">
+    <div class="col-12 md:col-4">
       <Button
         label="Usuários"
         severity="info"
@@ -17,35 +17,16 @@
 
         <form @submit.prevent="savePartner">
           <div class="grid">
-            <div class="md:col-3 sm:col-12">
+            <div class="col-12 md:col-3">
               <Fieldset legend="Foto">
-                <img
-                  v-if="partner.pictureURI && !temporaryPicture"
-                  :src="`${store.getters.getBaseUrl}/${partner.pictureURI}`"
-                  class="product-img pb-5"
-                />
-                <img v-if="temporaryPicture" :src="temporaryPicture" class="product-img pb-5" />
-                <div class="text-center">
-                  <FileUpload
-                    mode="basic"
-                    auto
-                    name="demo[]"
-                    accept="image/*"
-                    :url="undefined"
-                    :maxFileSize="1000000"
-                    @select="onFileSelection"
-                    customUpload
-                    chooseLabel="Carregar Foto do Parceiro"
-                    upload-label=""
-                  />
-                </div>
+                <PictureUploader :pictureUri="partner.pictureURI" @onFileSelected="file = $event" />
               </Fieldset>
             </div>
 
-            <div class="md:col-9 sm:col-12">
+            <div class="col-12 md:col-9">
               <Fieldset legend="Dados do Parceiro">
                 <div class="grid">
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field col-12 md:col-6">
                     <label for="name">Nome</label>
                     <InputText
                       type="text"
@@ -55,7 +36,7 @@
                     />
                     <FieldError :errors="v$.name.$errors" />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field col-12 md:col-6">
                     <label for="category">CNPJ</label>
                     <InputMask
                       type="text"
@@ -67,18 +48,18 @@
                     />
                     <FieldError :errors="v$.cnpj.$errors" />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field col-12 md:col-6">
                     <label for="">Horário de abertura</label>
                     <Calendar id="calendar-timeonly" v-model="v$.openingHours.$model" timeOnly />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field col-12 md:col-6">
                     <label for="">Horário de encerramento</label>
                     <Calendar id="calendar-timeonly" v-model="v$.closingHours.$model" timeOnly />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field col-12 md:col-6">
                     <label for="status">Status</label>
                     <div class="grid">
-                      <div class="field-radiobutton col-2">
+                      <div class="field-radiobutton col-12 md:col-6">
                         <RadioButton
                           v-model="v$.status.$model"
                           id="status-active"
@@ -87,7 +68,7 @@
                         />
                         <label for="ingredient1" class="ml-2">Ativo</label>
                       </div>
-                      <div class="field-radiobutton col">
+                      <div class="field-radiobutton col-12 md:col-6">
                         <RadioButton
                           v-model="v$.status.$model"
                           id="status-inactive"
@@ -104,10 +85,10 @@
           </div>
 
           <div class="grid">
-            <div class="md:col-12 sm:col-12">
+            <div class="col-12 md:col-12">
               <Fieldset legend="Endereço">
                 <div class="grid">
-                  <div class="field md:col-2 sm:col-12">
+                  <div class="field col-12 md:col-2">
                     <label for="size">CEP</label>
                     <InputMask
                       type="text"
@@ -120,7 +101,7 @@
                     />
                     <FieldError :errors="v$.address.cep.$errors" />
                   </div>
-                  <div class="field md:col-5 sm:col-12">
+                  <div class="field col-12 md:col-5">
                     <label for="size">Rua</label>
                     <InputText
                       type="text"
@@ -132,7 +113,7 @@
                     <FieldError :errors="v$.address.street.$errors" />
                   </div>
 
-                  <div class="field md:col-5 sm:col-12">
+                  <div class="field col-12 md:col-5">
                     <label for="size">Bairro</label>
                     <InputText
                       type="text"
@@ -144,7 +125,7 @@
                     <FieldError :errors="v$.address.neighbourhood.$errors" />
                   </div>
 
-                  <div class="field md:col-4 sm:col-12">
+                  <div class="field col-12 md:col-4">
                     <label for="size">Número</label>
                     <InputNumber
                       v-model="v$.address.number.$model"
@@ -155,7 +136,7 @@
                     <FieldError :errors="v$.address.number.$errors" />
                   </div>
 
-                  <div class="field md:col-4 sm:col-12">
+                  <div class="field col-12 md:col-4">
                     <label for="size">Complemento</label>
                     <InputText
                       type="text"
@@ -166,7 +147,7 @@
                     <FieldError :errors="v$.address.complement.$errors" />
                   </div>
 
-                  <div class="field md:col-4 sm:col-12">
+                  <div class="field col-12 md:col-4">
                     <label for="size">Cidade</label>
                     <InputText
                       type="text"
@@ -178,7 +159,7 @@
                     <FieldError :errors="v$.address.city.$errors" />
                   </div>
 
-                  <div class="field md:col-2 sm:col-12">
+                  <div class="field col-12 md:col-2">
                     <label for="size">UF</label>
                     <InputText
                       type="text"
@@ -208,19 +189,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import type { FileUploadSelectEvent } from 'primevue/fileupload'
+import { onMounted } from 'vue'
 import { useFindAddress, useSavePartner } from '@/composables'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { store } from '@/store'
+import PictureUploader from '@/components/PictureUploader.vue'
 
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 
-const temporaryPicture = ref('')
 const { isLoading, v$, partner, savePartner, file, findPartnerById, reset } = useSavePartner(toast)
 const { findAddressByCep } = useFindAddress()
 
@@ -235,13 +214,6 @@ const loadAddress = async () => {
     ...partner.value.address,
     ...address
   }
-}
-
-const onFileSelection = async (e: FileUploadSelectEvent) => {
-  const [selectedFile] = e.files
-  temporaryPicture.value = selectedFile.objectURL
-
-  file.value = selectedFile
 }
 
 const goToPartnerUsers = async () => {
@@ -263,7 +235,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.product-img {
+.uploader-img {
   width: 100%;
 }
 </style>

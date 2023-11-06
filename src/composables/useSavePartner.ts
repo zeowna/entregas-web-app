@@ -125,14 +125,14 @@ const updatePartner = async () => {
 }
 
 const createAddress = async () => {
-  partner.value.address = await Api.partners.addresses.createAddress(
+  partner.value.address = await Api.partners.addresses.create(
     partner.value.id as number,
     partner.value.address
   )
 }
 
 const updateAddress = async () => {
-  partner.value.address = await Api.partners.addresses.updateAddress(
+  partner.value.address = await Api.partners.addresses.update(
     partner.value.id as number,
     partner.value.address.id as number,
     partner.value.address
@@ -182,7 +182,7 @@ const savePartner = (toast: ToastServiceMethods) => async () => {
     toast.add({
       severity: 'error',
       summary: 'Erro ao Salvar',
-      detail: err?.response?.data?.message ?? err.message ?? 'Não foi possível salvar o Parceiro!',
+      detail: (err as Error).message ?? 'Não foi possível salvar o Parceiro!',
       life: 5000
     })
   } finally {

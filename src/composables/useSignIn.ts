@@ -57,7 +57,7 @@ export const useSignIn = () => {
       toast.add({
         severity: 'error',
         summary: 'Erro ao entrar',
-        detail: err?.response?.data.message ?? err?.message ?? 'Não foi possível realizar o login!',
+        detail: err?.message ?? 'Não foi possível realizar o login!',
         life: 5000
       })
     } finally {
@@ -89,10 +89,7 @@ export const useSignIn = () => {
       toast.add({
         severity: 'error',
         summary: 'Erro ao processar',
-        detail:
-          err?.response?.data?.message ??
-          err.message ??
-          'Não foi possível processar uma nova senha!',
+        detail: (err as Error).message ?? 'Não foi possível processar uma nova senha!',
         life: 5000
       })
     }

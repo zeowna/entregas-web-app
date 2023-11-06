@@ -56,7 +56,7 @@ const goToProductCategories = async (toast: ToastServiceMethods) => {
   })
 
   await router.push({
-    name: 'product-categories'
+    name: 'list-product-categories'
   })
 }
 
@@ -84,7 +84,7 @@ const saveProductCategory = (toast: ToastServiceMethods) => async () => {
     toast.add({
       severity: 'error',
       summary: 'Erro ao Salvar',
-      detail: err?.response?.data?.message ?? err.message ?? 'Não foi possível salvar a Categoria!',
+      detail: (err as Error).message ?? 'Não foi possível salvar a Categoria!',
       life: 5000
     })
   } finally {

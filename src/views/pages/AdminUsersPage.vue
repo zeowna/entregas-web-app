@@ -1,13 +1,7 @@
 <template>
   <div class="grid">
     <div class="md:col-12 sm:col-12">
-      <Button
-        label="Dados do Parceiro"
-        severity="info"
-        class="mr-2"
-        @click="goToPartner(+route.params.partnerId)"
-      />
-      <Button label="Criar Usuário" @click="goToPartnerUser(+route.params.partnerId)" />
+      <Button label="Criar Usuário" @click="goToAdminUser()" />
     </div>
   </div>
   <div class="grid">
@@ -46,7 +40,7 @@
                 severity="success"
                 v-tooltip="'Editar Usuário'"
                 :icon="PrimeIcons.PENCIL"
-                @click="goToPartnerUser(route.params.partnerId, slotProps.data.id)"
+                @click="goToAdminUser(slotProps.data.id)"
               />
             </template>
           </Column>
@@ -60,24 +54,12 @@
 import { onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
 import { store } from '@/store'
-import { useListPartnerUsers } from '@/composables/useListPartnerUsers'
-import { useRoute, useRouter } from 'vue-router'
+import { useListAdminUsers } from '@/composables'
 
-const router = useRouter()
-const route = useRoute()
-const { isLoading, data, onPage, findPartnerUsers, goToPartnerUser } = useListPartnerUsers()
-
-const goToPartner = async (partnerId: string) => {
-  await router.push({
-    name: 'edit-partner',
-    params: {
-      id: partnerId
-    }
-  })
-}
+const { isLoading, data, onPage, findAdminUsers, goToAdminUser } = useListAdminUsers()
 
 onMounted(async () => {
-  await findPartnerUsers(Number.parseInt(route.params.partnerId as string))
+  await findAdminUsers()
 })
 </script>
 

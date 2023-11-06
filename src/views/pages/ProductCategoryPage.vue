@@ -1,19 +1,25 @@
 <template>
   <div class="grid">
-    <div class="sm:col-12 md:col-6">
+    <div class="col-12 md:col-6">
       <div class="card p-fluid">
         <form @submit.prevent="saveProductCategory">
           <div class="grid">
-            <div class="field col-6">
-              <label for="name">Nome</label>
-              <InputText
-                type="text"
-                v-model="v$.name.$model"
-                id="name"
-                :class="v$.name.$error ? 'p-invalid' : ''"
-                placeholder="Nome da Categoria"
-              />
-              <FieldError :errors="v$.name.$errors" />
+            <div class="field col-12 md:col-12">
+              <Fieldset legend="Dados da Categoria">
+                <div class="grid">
+                  <div class="field col-12 md:col-6">
+                    <label for="name">Nome</label>
+                    <InputText
+                      type="text"
+                      v-model="v$.name.$model"
+                      id="name"
+                      :class="v$.name.$error ? 'p-invalid' : ''"
+                      placeholder="Nome da Categoria"
+                    />
+                    <FieldError :errors="v$.name.$errors" />
+                  </div>
+                </div>
+              </Fieldset>
             </div>
           </div>
 
@@ -27,14 +33,14 @@
       </div>
     </div>
 
-    <div class="sm:col-12 md:col-6">
+    <div class="col-12 md:col-6">
       <div class="card p-fluid">
         <div class="grid">
           <div class="col">
             <h5>Tamanho de Embalagem</h5>
 
             <div class="grid">
-              <div class="md:col-4 sm:col-12">
+              <div class="md:col-4 col-12">
                 <Button
                   label="Criar Tamanho"
                   v-show="!showCategoryForm"
@@ -45,26 +51,38 @@
             </div>
 
             <div class="grid" v-show="showCategoryForm">
-              <div class="col">
+              <div class="field col-12 md:col-12">
                 <form @submit.prevent="saveProductCategorySize">
-                  <div class="field col-6 pl-0">
-                    <label for="name">Nome</label>
-                    <InputText
-                      type="text"
-                      v-model="v$2.name.$model"
-                      id="name"
-                      :class="v$2.name.$error ? 'p-invalid' : ''"
-                      placeholder="Nome do Tamanho"
-                    />
-                    <FieldError :errors="v$2.name.$errors" />
+                  <div class="grid">
+                    <div class="field col-12 md:col-12">
+                      <Fieldset legend="Dados do Tamanho">
+                        <div class="grid">
+                          <div class="field col-12 md:col-6 pl-0">
+                            <label for="name">Nome</label>
+                            <InputText
+                              type="text"
+                              v-model="v$2.name.$model"
+                              id="name"
+                              :class="v$2.name.$error ? 'p-invalid' : ''"
+                              placeholder="Nome do Tamanho"
+                            />
+                            <FieldError :errors="v$2.name.$errors" />
+                          </div>
+                        </div>
+                      </Fieldset>
+                    </div>
                   </div>
 
-                  <Button
-                    label="Salvar"
-                    type="submit"
-                    severity="success"
-                    :disabled="isLoadingSize || v$2.$error"
-                  />
+                  <div class="grid">
+                    <div class="field col-12 md:col-12">
+                      <Button
+                        label="Salvar"
+                        type="submit"
+                        severity="success"
+                        :disabled="isLoadingSize || v$2.$error"
+                      />
+                    </div>
+                  </div>
                 </form>
               </div>
             </div>
@@ -106,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
@@ -135,8 +153,13 @@ onMounted(async () => {
 
   if (route.params?.id) {
     await findProductCategoryById(+route.params?.id)
-    await findProductCategorySizes()
+    await findProductCategorySizes(+route.params?.id)
   }
+})
+
+onUnmounted(() => {
+  reset()
+  resetProductcategorySize()
 })
 </script>
 

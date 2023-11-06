@@ -2,13 +2,13 @@
   <div class="grid">
     <div class="col-12">
       <div class="card p-fluid">
-        <h5>Cadastro de Usuário Parceiro</h5>
-        <form @submit.prevent="savePartnerUser">
+        <h5>Cadastro de Usuário Admin</h5>
+        <form @submit.prevent="saveAdminUser">
           <div class="grid">
             <div class="md:col-3 sm:col-12">
               <Fieldset legend="Foto">
                 <PictureUploader
-                  :pictureUri="partnerUser.profilePictureURI"
+                  :pictureUri="adminUser.profilePictureURI"
                   @onFileSelected="file = $event"
                 />
               </Fieldset>
@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
-import { useSavePartnerUser } from '@/composables'
+import { useSaveAdminUser } from '@/composables'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
 import { useRoute } from 'vue-router'
@@ -86,22 +86,14 @@ import PictureUploader from '@/components/PictureUploader.vue'
 const route = useRoute()
 const toast = useToast()
 
-const {
-  isLoading,
-  v$,
-  partnerUser,
-  file,
-  eighteenYearsAgo,
-  findByPartnerIdAndId,
-  reset,
-  savePartnerUser
-} = useSavePartnerUser(+route.params?.partnerId, toast)
+const { isLoading, v$, adminUser, file, eighteenYearsAgo, findById, reset, saveAdminUser } =
+  useSaveAdminUser(toast)
 
 onMounted(async () => {
   reset()
 
-  if (route.params?.partnerId && route.params?.id) {
-    await findByPartnerIdAndId(+route.params?.partnerId, +route.params?.id)
+  if (route.params?.id) {
+    await findById(+route.params?.id)
   }
 })
 

@@ -11,12 +11,12 @@ const isLoading = ref(false)
 const product = ref<Product>({
   name: '',
   categoryId: null,
-  size: null,
-  pictureURI: null,
+  size: '',
+  pictureURI: '',
   status: ProductStatus.Active
 })
 
-const base64data = ref<string | ArrayBuffer | null>(null)
+const file = ref<File | null>(null)
 
 const rules = computed(() => ({
   name: { required: helpers.withMessage('Nome é obrigatório', required) },
@@ -31,8 +31,8 @@ const reset = () => {
   product.value = {
     name: '',
     categoryId: null,
-    size: null,
-    pictureURI: null,
+    size: '',
+    pictureURI: '',
     status: ProductStatus.Active
   }
   v$.value.$reset()
@@ -42,7 +42,7 @@ const findProductById = async (id: number) => {
   try {
     isLoading.value = true
     product.value = await Api.products.findById(id)
-    product.value.categoryId = product.value.category.id
+    product.value.categoryId = product.value?.category?.id
     isLoading.value = false
   } catch (err) {
     if (err instanceof NotFoundError) {
@@ -54,12 +54,12 @@ const findProductById = async (id: number) => {
 }
 
 const uploadPicture = async () => {
-  await Api.products.uploadPicture(product.value!.id, base64data.value)
+  await Api.products.uploadPicture(product.value?.id as number, file.value as File)
 }
 const createProduct = async () => {
   product.value = await Api.products.create(product.value)
 
-  if (base64data.value) {
+  if (file.value) {
     await uploadPicture()
   }
 }
@@ -67,7 +67,7 @@ const createProduct = async () => {
 const updateProduct = async () => {
   product.value = await Api.products.update(product.value!.id as number, product.value)
 
-  if (base64data.value) {
+  if (file.value) {
     await uploadPicture()
   }
 }
@@ -109,7 +109,7 @@ const saveProduct = (toast: ToastServiceMethods) => async () => {
     toast.add({
       severity: 'error',
       summary: 'Erro ao Salvar',
-      detail: err?.response?.data?.message ?? err.message ?? 'Não foi possível salvar o Produto!',
+      detail: (err as Error).message ?? 'Não foi possível salvar o Produto!',
       life: 5000
     })
   } finally {
@@ -121,7 +121,7 @@ export const useSaveProduct = (toast: ToastServiceMethods) => {
   return {
     isLoading,
     product,
-    base64data: file,
+    file,
     v$,
     findProductById,
     saveProduct: saveProduct(toast),

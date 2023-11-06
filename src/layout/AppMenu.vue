@@ -8,6 +8,10 @@ const user = computed(() => store.getters.getUser)
 
 const adminMenu = [
   {
+    label: 'Admin',
+    items: [{ label: 'Listar Usuários Admin', icon: 'pi pi-user', to: '/admin/users' }]
+  },
+  {
     label: 'Produtos',
     items: [
       { label: 'Listar Categorias', icon: 'pi pi-hashtag', to: '/product-categories' },
@@ -18,11 +22,6 @@ const adminMenu = [
   {
     label: 'Parceiros',
     items: [{ label: 'Listar Parceiros', icon: 'pi pi-shopping-bag', to: '/partners' }]
-  },
-  { separator: true },
-  {
-    label: 'Solicitações',
-    items: [{ label: 'Listar Solicitações', icon: 'pi pi-check-square', to: '/product-requests' }]
   }
 ]
 

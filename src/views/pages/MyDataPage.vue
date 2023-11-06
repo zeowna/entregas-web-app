@@ -2,19 +2,19 @@
   <div class="grid">
     <div class="col-12">
       <div class="card p-fluid">
-        <h5>Cadastro de Usuário Parceiro</h5>
-        <form @submit.prevent="savePartnerUser">
+        <h5>Meus Dados</h5>
+        <form @submit.prevent="saveMe">
           <div class="grid">
             <div class="md:col-3 sm:col-12">
               <Fieldset legend="Foto">
                 <PictureUploader
-                  :pictureUri="partnerUser.profilePictureURI"
+                  :pictureUri="me.profilePictureURI"
                   @onFileSelected="file = $event"
                 />
               </Fieldset>
             </div>
             <div class="md:col-9 sm:col-12">
-              <Fieldset legend="Dados do Usuário">
+              <Fieldset legend="Meus Dados">
                 <div class="grid">
                   <div class="field md:col-6 sm:col-12">
                     <label for="name">Nome</label>
@@ -58,6 +58,32 @@
                     />
                     <FieldError :errors="v$.email.$errors" />
                   </div>
+
+                  <div class="field md:col-12 sm:col-12">
+                    <Button label="Alterar senha" severity="info" @click="togglePasswordFields" />
+                  </div>
+
+                  <div class="field md:col-6 sm:col-12" v-if="passwordFieldEnabled">
+                    <label for="status">Senha</label>
+                    <InputText
+                      type="password"
+                      v-model="v$.password.$model"
+                      id="password"
+                      placeholder="Senha do Usuário"
+                    />
+                    <FieldError :errors="v$!.password.$errors" />
+                  </div>
+
+                  <div class="field md:col-6 sm:col-12" v-if="passwordFieldEnabled">
+                    <label for="status">Confirmar senha</label>
+                    <InputText
+                      type="password"
+                      v-model="v$.passwordConfirmation.$model"
+                      id="passwordConfirmation"
+                      placeholder="Confirmar Senha do Usuário"
+                    />
+                    <FieldError :errors="v$!.passwordConfirmation.$errors" />
+                  </div>
                 </div>
               </Fieldset>
             </div>
@@ -77,32 +103,30 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
-import { useSavePartnerUser } from '@/composables'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
-import { useRoute } from 'vue-router'
+import { useSaveMe } from '@/composables/useSaveMe'
 import PictureUploader from '@/components/PictureUploader.vue'
 
-const route = useRoute()
 const toast = useToast()
 
 const {
   isLoading,
   v$,
-  partnerUser,
+  me,
   file,
   eighteenYearsAgo,
-  findByPartnerIdAndId,
+  findMe,
   reset,
-  savePartnerUser
-} = useSavePartnerUser(+route.params?.partnerId, toast)
+  saveMe,
+  togglePasswordFields,
+  passwordFieldEnabled
+} = useSaveMe(toast)
 
 onMounted(async () => {
   reset()
 
-  if (route.params?.partnerId && route.params?.id) {
-    await findByPartnerIdAndId(+route.params?.partnerId, +route.params?.id)
-  }
+  await findMe()
 })
 
 onUnmounted(() => {

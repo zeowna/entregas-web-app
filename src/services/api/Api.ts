@@ -5,16 +5,20 @@ import { PartnersResource } from './PartnersResource'
 import { OrdersResource } from './OrdersResource'
 import { CustomersResource } from './CustomersResource'
 import { store } from '@/store'
-import { ProductResource } from '@/services/api/ProductResource'
+import { ProductsResource } from '@/services/api/ProductsResource'
 import { AddressesResource } from '@/services/api/AddressesResource'
+import { AdminResource } from '@/services/api/types/AdminResource'
+import { MeResource } from '@/services/api/MeResource'
 
 export class Api {
   static client = computed(() => axios.create({ baseURL: store?.getters?.getBaseUrl }))
 
   static auth = new AuthResource(Api.client)
+  static me = new MeResource(Api.client)
   static addresses = new AddressesResource(Api.client)
   static partners = new PartnersResource(Api.client)
   static orders = new OrdersResource(Api.client)
   static customers = new CustomersResource(Api.client)
-  static products = new ProductResource(Api.client)
+  static products = new ProductsResource(Api.client)
+  static admin = new AdminResource(Api.client)
 }

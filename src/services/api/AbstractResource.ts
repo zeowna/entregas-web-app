@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance } from 'axios'
 import { BadRequestError, NotFoundError } from './errors'
 import { computed, ComputedRef } from 'vue'
-import type { Entity, FindEntitiesPaging, FindEntitiesResponse } from './types'
+import type { Entity } from './types'
 import { store } from '@/store'
 
 export abstract class AbstractResource<T extends Entity> {
@@ -64,38 +64,12 @@ export abstract class AbstractResource<T extends Entity> {
     return data
   }
 
-  async find(
-    { conditions = {}, skip = 0, limit = 15, sort = { updatedAt: -1 } }: FindEntitiesPaging = {},
-    url = this.url
-  ) {
-    const response = await this.get<FindEntitiesResponse<T>>(url, {
-      conditions: JSON.stringify(conditions),
-      skip,
-      limit,
-      sort: JSON.stringify(sort)
-    })
-
-    return response
-  }
-
-  async findById(id: number, url?: string) {
-    return this.get<T>(`${url ?? this.url}/${id}`)
-  }
-
-  async create(entity: Entity, url?: string) {
-    return this.post<T>(url ?? this.url, entity)
-  }
-
-  async update(id: number, entity: Entity, url?: string) {
-    return this.patch<T>(url ?? `${this.url}/${id}`, entity)
-  }
-
   private buildAuthorizationHeaders() {
     const token = computed(() => store.getters.getToken)
 
     return token.value
       ? {
-          Authorization: `Bearer ${store.getters.getToken}`
+          Authorization: `Bearer ${token.value}`
         }
       : {}
   }
@@ -109,6 +83,8 @@ export abstract class AbstractResource<T extends Entity> {
           return new BadRequestError(errors)
         case 404:
           return new NotFoundError(message)
+        default:
+          return new Error(err?.response?.data?.message)
       }
     }
 

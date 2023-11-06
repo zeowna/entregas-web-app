@@ -10,15 +10,14 @@ export class ProductCategorySizesResource extends AbstractResource<ProductCatego
     )
   }
 
-  async create(entity: ProductCategorySize) {
-    return super.create(entity, this.url.replace(':productCategoryId', `${entity.categoryId}`))
+  async create(productCategoryId: number, entity: ProductCategorySize) {
+    return super.post(this.url.replace(':productCategoryId', `${productCategoryId}`), entity)
   }
 
-  async update(id: number, entity: ProductCategorySize) {
-    return super.update(
-      id,
-      entity,
-      `${this.url.replace(':productCategoryId', `${entity.categoryId}`)}/${id}`
+  async update(productCategoryId: number, id: number, entity: ProductCategorySize) {
+    return super.patch(
+      `${this.url.replace(':productCategoryId', `${productCategoryId}`)}/${id}`,
+      entity
     )
   }
 }

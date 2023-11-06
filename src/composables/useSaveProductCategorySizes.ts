@@ -4,24 +4,20 @@ import { ProductCategorySize } from '@/services/api/types'
 import { helpers, required } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import { Api } from '@/services/api/Api'
-import { useSaveProductCategory } from '@/composables/useSaveProductCategory'
-
-const { productCategory } = useSaveProductCategory()
 
 const isLoading = ref(false)
 const showCategoryForm = ref(false)
 const productCategorySize = ref<ProductCategorySize>({
   name: ''
 })
+const data = ref<ProductCategorySize[]>([])
+const productCategoryId = ref<number | null>()
 
 const reset = () => {
   isLoading.value = false
-  productCategory.value = {
-    name: ''
-  }
+  productCategoryId.value = null
+  data.value = []
 }
-
-const data = ref<ProductCategorySize[]>([])
 
 const rulesProductCategory = computed(() => ({
   name: { required: helpers.withMessage('Nome é obrigatório', required) }
@@ -29,29 +25,40 @@ const rulesProductCategory = computed(() => ({
 
 const v$ = useVuelidate(rulesProductCategory, productCategorySize)
 
-const findProductCategorySizes = async (id?: number) => {
+const findProductCategorySizes = async (id: number) => {
+  productCategoryId.value = id
+
   isLoading.value = true
-  data.value = await Api.products.categories.sizes.findByCategoryId(
-    id ?? (productCategory.value.id as number)
-  )
+  data.value = await Api.products.categories.sizes.findByCategoryId(productCategoryId.value)
   isLoading.value = false
 }
 
 const selectProductSize = async (selected: ProductCategorySize) => {
   showCategoryForm.value = true
   productCategorySize.value = selected
-  productCategorySize.value.categoryId = productCategory.value.id
 }
 
 const createProductCategorySize = async () => {
-  await Api.products.categories.sizes.create(productCategorySize.value)
+  await Api.products.categories.sizes.create(
+    productCategoryId.value as number,
+    productCategorySize.value
+  )
+
+  productCategorySize.value = {
+    name: ''
+  }
 }
 
 const updateProductCategorySize = async () => {
   await Api.products.categories.sizes.update(
+    productCategoryId.value as number,
     productCategorySize.value!.id as number,
     productCategorySize.value
   )
+
+  productCategorySize.value = {
+    name: ''
+  }
 }
 
 const saveProductCategorySize = (toast: ToastServiceMethods) => async () => {
@@ -59,7 +66,6 @@ const saveProductCategorySize = (toast: ToastServiceMethods) => async () => {
     isLoading.value = true
 
     productCategorySize.value.name = productCategorySize.value.name.trim()
-    productCategorySize.value.categoryId = productCategory.value.id
 
     const formValidation = await v$.value.$validate()
 
@@ -79,12 +85,12 @@ const saveProductCategorySize = (toast: ToastServiceMethods) => async () => {
     toast.add({
       severity: 'error',
       summary: 'Erro ao Salvar',
-      detail: err?.response?.data?.message ?? err.message ?? 'Não foi possível salvar o Tamanho!',
+      detail: (err as Error).message ?? 'Não foi possível salvar o Tamanho!',
       life: 5000
     })
   } finally {
     isLoading.value = false
-    await findProductCategorySizes()
+    await findProductCategorySizes(productCategoryId.value as number)
   }
 }
 

@@ -8,6 +8,8 @@ import router from '@/router'
 import { useVuelidate } from '@vuelidate/core'
 import { DateTime } from 'luxon'
 
+const partnerId = ref<number | null>()
+
 const isLoading = ref(false)
 const partnerUser = ref<PartnerUser>({
   name: '',
@@ -18,8 +20,8 @@ const partnerUser = ref<PartnerUser>({
   profilePictureURI: '',
   partnerId: null
 })
-const eighteenYearsAgo = computed(() => DateTime.now().minus({ years: 18 }).toJSDate())
 
+const eighteenYearsAgo = computed(() => DateTime.now().minus({ years: 18 }).toJSDate())
 const file = ref<File | null>(null)
 
 const rules = computed(() => ({
@@ -47,8 +49,8 @@ const reset = () => {
 }
 
 const uploadPicture = async () => {
-  await Api.partners.users.uploadPicture(
-    partnerUser.value.partnerId as number,
+  await Api.partners.users.uploadProfilePicture(
+    partnerId.value as number,
     partnerUser.value.id as number,
     file.value as File
   )
@@ -58,7 +60,6 @@ const findByPartnerIdAndId = async (partnerId: number, id: number) => {
   try {
     isLoading.value = true
     partnerUser.value = await Api.partners.users.findByPartnerIdAndId(partnerId, id)
-    partnerUser.value.partnerId = partnerUser.value.partner?.id
     partnerUser.value.birthday = new Date(partnerUser.value.birthday as unknown as string)
 
     isLoading.value = false
@@ -72,8 +73,8 @@ const findByPartnerIdAndId = async (partnerId: number, id: number) => {
 }
 
 const createPartnerUser = async () => {
-  partnerUser.value = await Api.partners.users.create(partnerUser.value)
-  partnerUser.value.partnerId = partnerUser.value.partner?.id
+  partnerUser.value = await Api.partners.users.create(partnerId.value as number, partnerUser.value)
+
   partnerUser.value.birthday = new Date(partnerUser.value.birthday as unknown as string)
 
   if (file.value) {
@@ -83,10 +84,10 @@ const createPartnerUser = async () => {
 
 const updatePartnerUser = async () => {
   partnerUser.value = await Api.partners.users.update(
+    partnerId.value as number,
     partnerUser.value!.id as number,
     partnerUser.value
   )
-  partnerUser.value.partnerId = partnerUser.value.partner?.id
   partnerUser.value.birthday = new Date(partnerUser.value.birthday as unknown as string)
 
   if (file.value) {
@@ -104,11 +105,11 @@ const goToPartnerUsers = async (toast: ToastServiceMethods) => {
 
   await router.push({
     name: 'list-partner-users',
-    params: { partnerId: partnerUser.value.partnerId }
+    params: { partnerId: partnerId.value }
   })
 }
 
-const savePartnerUser = (toast?: ToastServiceMethods) => async () => {
+const savePartnerUser = (toast: ToastServiceMethods) => async () => {
   try {
     isLoading.value = true
 
@@ -132,7 +133,7 @@ const savePartnerUser = (toast?: ToastServiceMethods) => async () => {
     toast?.add({
       severity: 'error',
       summary: 'Erro ao Salvar',
-      detail: err?.response?.data?.message ?? err.message ?? 'Não foi possível salvar o Usuário!',
+      detail: (err as Error).message ?? 'Não foi possível salvar o Usuário!',
       life: 5000
     })
   } finally {
@@ -140,7 +141,9 @@ const savePartnerUser = (toast?: ToastServiceMethods) => async () => {
   }
 }
 
-export const userSavePartnerUser = (toast?: ToastServiceMethods) => {
+export const useSavePartnerUser = (_partnerId: number, toast: ToastServiceMethods) => {
+  partnerId.value = _partnerId
+
   return {
     isLoading,
     partnerUser,

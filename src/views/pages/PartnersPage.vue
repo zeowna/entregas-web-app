@@ -4,8 +4,20 @@ import { PrimeIcons } from 'primevue/api'
 import { useListPartners } from '@/composables'
 import { store } from '@/store'
 import { PartnerStatuses } from '@/services/api/types'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const { isLoading, data, onPage, findPartners, goToPartner } = useListPartners()
+
+const goToPartnerUsers = async (partnerId: number) => {
+  await router.push({
+    name: 'list-partner-users',
+    params: {
+      partnerId
+    }
+  })
+}
 
 onMounted(async () => {
   await findPartners()
@@ -74,6 +86,15 @@ onMounted(async () => {
                 v-tooltip="'Editar Parceiro'"
                 :icon="PrimeIcons.PENCIL"
                 @click="goToPartner(slotProps.data.id)"
+                class="mr-2"
+              />
+
+              <Button
+                severity="info"
+                v-tooltip="'Listar Usuários'"
+                :icon="PrimeIcons.USERS"
+                @click="goToPartnerUsers(slotProps.data.id)"
+                class="mr-2"
               />
             </template>
           </Column>
