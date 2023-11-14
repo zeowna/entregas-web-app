@@ -1,4 +1,4 @@
-import { Entity } from '@/services/api/types/Entity';
+import { Entity } from '@/services/api/types/Entity'
 
 export interface Address extends Entity {
   cep: string
@@ -8,4 +8,6 @@ export interface Address extends Entity {
   complement?: string
   city: string
   state: string
+  lat?: number
+  lng?: number
 }

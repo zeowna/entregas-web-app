@@ -2,7 +2,6 @@
 import { onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
 import { useListPartners } from '@/composables'
-import { store } from '@/store'
 import { PartnerStatuses } from '@/services/api/types'
 import { useRouter } from 'vue-router'
 
@@ -48,7 +47,7 @@ onMounted(async () => {
             <template #body="slotProps">
               <img
                 v-if="slotProps.data.pictureURI"
-                :src="`${store.getters.getBaseUrl}/${slotProps.data.pictureURI}`"
+                :src="slotProps.data.pictureURI"
                 class="w-6rem shadow-2 border-round"
               />
             </template>

@@ -1,18 +1,3 @@
-<script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-import ProductService from '@/service/ProductService'
-
-const formatValue = (value: number) => 'R$ ' + (value / 100).toFixed(2).replace('.', ',')
-
-const orders = ref([])
-
-onMounted(async () => {
-  const service = new ProductService()
-
-  orders.value = await service.getProductsWithOrdersSmall()
-})
-</script>
-
 <template>
   <div class="grid">
     <div class="col-12">
@@ -59,6 +44,22 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+
+const formatValue = (value: number) => 'R$ ' + (value / 100).toFixed(2).replace('.', ',')
+
+const orders = ref([])
+
+onMounted(async () => {
+  const service = {
+    getProductsWithOrdersSmall: async (): Promise<any> => []
+  }
+
+  orders.value = await service.getProductsWithOrdersSmall()
+})
+</script>
 
 <style scoped lang="scss">
 @import '@/assets/demo/styles/badges.scss';

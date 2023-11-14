@@ -14,7 +14,9 @@ const router = createRouter({
           path: '/',
           name: 'dashboard',
           meta: { requiresAuth: true },
-          component: () => import('@/views/Dashboard.vue')
+          redirect(to) {
+            return { name: 'my-data', params: to.params, query: to.query }
+          }
         },
         {
           path: '/my-data',
@@ -158,21 +160,26 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  await store.dispatch(ActionTypes.REFRESH_TOKEN)
+  try {
+    await store.dispatch(ActionTypes.REFRESH_TOKEN)
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (store.getters.getUser) {
-      next()
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+      if (store.getters.getUser) {
+        next()
+        return
+      }
+    }
+
+    if (to.name !== 'signIn') {
+      next({ name: 'signIn' })
       return
     }
-  }
 
-  if (to.name !== 'signIn') {
+    next()
+  } catch (err) {
+    console.error(err)
     next({ name: 'signIn' })
-    return
   }
-
-  next()
 })
 
 export default router

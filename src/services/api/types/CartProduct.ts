@@ -1,8 +1,11 @@
-import { Entity } from '@/services/api/types/Entity';
-import { PartnerProduct } from '@/services/api/types/PartnerProduct';
+import { Entity } from '@/services/api/types/Entity'
+import { PartnerProduct } from '@/services/api/types/PartnerProduct'
+import { User } from '@/services/api/types/User'
 
 export interface CartProduct extends Entity {
-  quantity: number;
-  value: number;
-  partnerProduct: PartnerProduct;
+  customer: User
+  partnerProduct: Partial<PartnerProduct>
+  quantity: number
+  value: number
+  totalValue: number
 }

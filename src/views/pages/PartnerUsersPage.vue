@@ -5,7 +5,7 @@
         label="Dados do Parceiro"
         severity="info"
         class="mr-2"
-        @click="goToPartner(+route.params.partnerId)"
+        @click="goToPartner(+route.params!.partnerId)"
       />
       <Button label="Criar Usuário" @click="goToPartnerUser(+route.params.partnerId)" />
     </div>
@@ -28,7 +28,7 @@
             <template #body="slotProps">
               <img
                 v-if="slotProps.data.profilePictureURI"
-                :src="`${store.getters.getBaseUrl}/${slotProps.data.profilePictureURI}`"
+                :src="slotProps.data.profilePictureURI"
                 class="w-6rem shadow-2 border-round"
               />
             </template>
@@ -46,7 +46,9 @@
                 severity="success"
                 v-tooltip="'Editar Usuário'"
                 :icon="PrimeIcons.PENCIL"
-                @click="goToPartnerUser(route.params.partnerId, slotProps.data.id)"
+                @click="
+                  goToPartnerUser(route.params.partnerId as unknown as number, slotProps.data.id)
+                "
               />
             </template>
           </Column>
@@ -59,7 +61,6 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
-import { store } from '@/store'
 import { useListPartnerUsers } from '@/composables/useListPartnerUsers'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -67,7 +68,7 @@ const router = useRouter()
 const route = useRoute()
 const { isLoading, data, onPage, findPartnerUsers, goToPartnerUser } = useListPartnerUsers()
 
-const goToPartner = async (partnerId: string) => {
+const goToPartner = async (partnerId: number) => {
   await router.push({
     name: 'edit-partner',
     params: {
@@ -77,7 +78,7 @@ const goToPartner = async (partnerId: string) => {
 }
 
 onMounted(async () => {
-  await findPartnerUsers(Number.parseInt(route.params.partnerId as string))
+  await findPartnerUsers(+route.params.partnerId)
 })
 </script>
 

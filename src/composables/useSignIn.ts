@@ -54,12 +54,14 @@ export const useSignIn = () => {
 
       setTimeout(async () => await router.push('/'), 2000)
     } catch (err) {
-      toast.add({
-        severity: 'error',
-        summary: 'Erro ao entrar',
-        detail: err?.message ?? 'Não foi possível realizar o login!',
-        life: 5000
-      })
+      if (err instanceof Error) {
+        toast.add({
+          severity: 'error',
+          summary: 'Erro ao entrar',
+          detail: err?.message ?? 'Não foi possível realizar o login!',
+          life: 5000
+        })
+      }
     } finally {
       isLoading.value = false
     }

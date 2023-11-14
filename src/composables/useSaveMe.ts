@@ -10,13 +10,14 @@ import { User } from '@/services/api/types'
 
 const isLoading = ref(false)
 const passwordFieldEnabled = ref(false)
-const me = ref<User>({
+const me = ref<User & { passwordConfirmation: string }>({
   name: '',
   birthday: null,
   cpf: '',
   email: '',
   password: '',
-  profilePictureURI: ''
+  profilePictureURI: '',
+  passwordConfirmation: ''
 })
 
 const eighteenYearsAgo = computed(() => DateTime.now().minus({ years: 18 }).toJSDate())
@@ -54,7 +55,8 @@ const reset = () => {
     cpf: '',
     email: '',
     password: '',
-    profilePictureURI: ''
+    profilePictureURI: '',
+    passwordConfirmation: ''
   }
 
   file.value = null
@@ -69,7 +71,11 @@ const uploadPicture = async () => {
 const findMe = async () => {
   try {
     isLoading.value = true
-    me.value = await Api.me.findMe()
+    const found = await Api.me.findMe()
+    me.value = {
+      ...found,
+      passwordConfirmation: ''
+    }
     me.value.birthday = new Date(me.value.birthday as unknown as string)
 
     isLoading.value = false
@@ -87,7 +93,13 @@ const togglePasswordFields = () => {
 }
 
 const updateMe = async () => {
-  me.value = await Api.me.update(me.value)
+  const updated = await Api.me.update(me.value)
+
+  me.value = {
+    ...updated,
+    passwordConfirmation: ''
+  }
+
   me.value.birthday = new Date(me.value.birthday as unknown as string)
 
   if (file.value) {

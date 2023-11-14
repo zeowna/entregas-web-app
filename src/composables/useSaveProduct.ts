@@ -10,7 +10,7 @@ import { NotFoundError } from '@/services/api/errors'
 const isLoading = ref(false)
 const product = ref<Product>({
   name: '',
-  categoryId: null,
+  categoryId: undefined,
   size: '',
   pictureURI: '',
   status: ProductStatus.Active
@@ -25,7 +25,7 @@ const rules = computed(() => ({
   status: { required: helpers.withMessage('Status é obrigatório', required) }
 }))
 
-const v$ = useVuelidate(rules, product)
+const v$ = useVuelidate(rules.value, product as any)
 
 const reset = () => {
   product.value = {

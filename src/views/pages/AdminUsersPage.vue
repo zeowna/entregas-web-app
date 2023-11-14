@@ -22,7 +22,7 @@
             <template #body="slotProps">
               <img
                 v-if="slotProps.data.profilePictureURI"
-                :src="`${store.getters.getBaseUrl}/${slotProps.data.profilePictureURI}`"
+                :src="slotProps.data.profilePictureURI"
                 class="w-6rem shadow-2 border-round"
               />
             </template>
@@ -53,7 +53,6 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
-import { store } from '@/store'
 import { useListAdminUsers } from '@/composables'
 
 const { isLoading, data, onPage, findAdminUsers, goToAdminUser } = useListAdminUsers()

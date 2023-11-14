@@ -1,4 +1,4 @@
-import { ActionContext } from 'vuex'
+import { ActionContext, ActionTree } from 'vuex'
 import { Api } from '@/services/api/Api'
 import { AppState } from '@/store/index'
 import { AdminUser, User } from '@/services/api/types'
@@ -38,7 +38,7 @@ export interface Actions {
   [ActionTypes.SIGN_OUT](context: AugmentedActionContext): void
 }
 
-export const actions: Actions = {
+export const actions: Actions & ActionTree<AppState, AppState> = {
   async [ActionTypes.SIGN_IN]({ dispatch }, { email, password }) {
     const { user, authorization_token } = await Api.auth.signIn(email, password)
 
@@ -59,14 +59,22 @@ export const actions: Actions = {
 
     dispatch(ActionTypes.SET_TOKEN, token)
 
-    const { user, authorization_token } = await Api.auth.refreshToken(token as string)
+    try {
+      const { user, authorization_token } = await Api.auth.refreshToken(token as string)
 
-    localStorage.setItem('token', authorization_token)
+      localStorage.setItem('token', authorization_token)
 
-    dispatch(ActionTypes.SET_USER, user)
-    dispatch(ActionTypes.SET_TOKEN, token)
+      dispatch(ActionTypes.SET_USER, user)
+      dispatch(ActionTypes.SET_TOKEN, token)
 
-    return user
+      return user
+    } catch (err) {
+      localStorage.setItem('token', '')
+      dispatch(ActionTypes.SET_USER, null)
+      dispatch(ActionTypes.SET_TOKEN, null)
+
+      throw err
+    }
   },
   [ActionTypes.SET_USER](
     { commit }: ActionContext<AppState, AppState>,

@@ -1,9 +1,5 @@
 <template>
-  <img
-    v-if="pictureUri && !temporaryPicture"
-    :src="`${store.getters.getBaseUrl}/${pictureUri}`"
-    class="uploader-img pb-5"
-  />
+  <img v-if="pictureUri && !temporaryPicture" :src="pictureUri" class="uploader-img pb-5" />
   <img v-if="temporaryPicture" :src="temporaryPicture" class="uploader-img pb-5" />
   <div class="text-center">
     <FileUpload
@@ -21,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { store } from '@/store'
 import { ref } from 'vue'
 import { FileUploadSelectEvent } from 'primevue/fileupload'
 

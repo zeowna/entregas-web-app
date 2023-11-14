@@ -41,7 +41,6 @@ const rules = computed(() => ({
     street: { required: helpers.withMessage('Preencha a Rua do Parceiro', required) },
     neighbourhood: { required: helpers.withMessage('Número é obrigatório', required) },
     number: { required: helpers.withMessage('Número é obrigatório', required) },
-    complement: {},
     city: { required: helpers.withMessage('Preencha a Cidade do Parceiro', required) },
     state: { required: helpers.withMessage('UF é obrigatório', required) }
   }

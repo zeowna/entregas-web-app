@@ -11,6 +11,6 @@ export interface Product extends Entity {
   categoryId?: number | null
   category?: ProductCategory
   size: string
-  status: ProductStatus
   pictureURI?: string
+  status: ProductStatus
 }

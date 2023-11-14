@@ -96,6 +96,7 @@ const saveProductCategorySize = (toast: ToastServiceMethods) => async () => {
 
 export const useSaveProductCategorySizes = (toast: ToastServiceMethods) => {
   return {
+    isLoading,
     data,
     showCategoryForm,
     v$,

@@ -140,11 +140,10 @@
                     <label for="size">Complemento</label>
                     <InputText
                       type="text"
-                      v-model="v$.address.complement.$model"
+                      v-model="partner.address.complement"
                       id="complement"
                       placeholder="Complemento do Parceiro"
                     />
-                    <FieldError :errors="v$.address.complement.$errors" />
                   </div>
 
                   <div class="field col-12 md:col-4">

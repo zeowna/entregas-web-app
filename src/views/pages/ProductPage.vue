@@ -128,7 +128,7 @@ onMounted(async () => {
 
   if (route.params?.id) {
     await findProductById(+route.params?.id)
-    await findProductCategorySizes(product?.value?.categoryId as number)
+    await findProductCategorySizes(product.value.categoryId as number)
   }
 })
 

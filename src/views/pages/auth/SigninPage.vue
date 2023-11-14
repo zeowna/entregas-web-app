@@ -13,16 +13,18 @@ const onChangeTheme = (theme: string, mode: string) => {
   const elementId = 'theme-css'
   const linkElement = document.getElementById(elementId)
 
-  const cloneLinkElement = linkElement.cloneNode(true)
-  const newThemeUrl = linkElement.getAttribute('href').replace(layoutConfig.theme.value, theme)
-  cloneLinkElement.setAttribute('id', elementId + '-clone')
-  cloneLinkElement.setAttribute('href', newThemeUrl)
-  cloneLinkElement.addEventListener('load', () => {
-    linkElement.remove()
-    cloneLinkElement.setAttribute('id', elementId)
-    changeThemeSettings(theme, mode === 'dark')
-  })
-  linkElement.parentNode.insertBefore(cloneLinkElement, linkElement.nextSibling)
+  if (linkElement) {
+    const cloneLinkElement = linkElement.cloneNode(true) as Element
+    const newThemeUrl = linkElement.getAttribute('href')!.replace(layoutConfig.theme.value, theme)
+    cloneLinkElement!.setAttribute('id', elementId + '-clone')
+    cloneLinkElement!.setAttribute('href', newThemeUrl)
+    cloneLinkElement!.addEventListener('load', () => {
+      linkElement!.remove()
+      cloneLinkElement!.setAttribute('id', elementId)
+      changeThemeSettings(theme, mode === 'dark')
+    })
+    linkElement.parentNode!.insertBefore(cloneLinkElement, linkElement!.nextSibling)
+  }
 }
 
 onMounted(() => {
