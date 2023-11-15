@@ -31,7 +31,7 @@
           <Column field="status" header="Status"></Column>
           <Column field="totalValue" header="Valor Total">
             <template #body="{ data }">
-              {{ formatValue(data.totalValue) }}
+              {{ centsToCurrency(data.totalValue) }}
             </template>
           </Column>
           <Column header="Ações">
@@ -47,8 +47,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-
-const formatValue = (value: number) => 'R$ ' + (value / 100).toFixed(2).replace('.', ',')
+import { centsToCurrency } from '@/utils'
 
 const orders = ref([])
 

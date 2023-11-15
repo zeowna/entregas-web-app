@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { FindEntitiesPaging, FindEntitiesResponse, ProductCategory } from '@/services/api/types'
+import { FindEntitiesPaging, FindEntitiesResponse, Product } from '@/services/api/types'
 import { Api } from '@/services/api/Api'
 import { DataTablePageEvent } from 'primevue/datatable'
 import router from '@/router'
@@ -7,7 +7,7 @@ import router from '@/router'
 export const useListProducts = () => {
   const limit = 25
 
-  const data = ref<FindEntitiesResponse<ProductCategory>>({
+  const data = ref<FindEntitiesResponse<Product>>({
     list: [],
     count: 0,
     skip: 0,

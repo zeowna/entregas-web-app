@@ -7,7 +7,7 @@
   <div class="grid">
     <div class="col-12">
       <div class="card">
-        <h5>Usuários</h5>
+        <h5>Usuários Admin</h5>
         <DataTable
           :value="data.list"
           lazy

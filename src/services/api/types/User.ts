@@ -11,7 +11,7 @@ export interface User extends Entity {
   birthday: Date | string | null
   cpf: string
   email: string
-  password: string
+  password?: string
   profilePictureURI?: string
   readonly type?: UserTypes | null
 }

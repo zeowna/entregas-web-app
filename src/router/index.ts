@@ -115,6 +115,26 @@ const router = createRouter({
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/PartnerUserPage.vue')
         },
+
+        {
+          path: '/partners/:partnerId/products',
+          name: 'list-partner-products',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnerProductsPage.vue')
+        },
+        {
+          path: '/partners/:partnerId/products/create',
+          name: 'create-partner-product',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnerProductPage.vue')
+        },
+        {
+          path: '/partners/:partnerId/products/update/:id',
+          name: 'edit-partner-product',
+          meta: { requiresAuth: true },
+          component: () => import('@/views/pages/PartnerProductPage.vue')
+        },
+
         {
           path: '/orders',
           name: 'orders',

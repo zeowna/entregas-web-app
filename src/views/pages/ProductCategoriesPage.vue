@@ -20,7 +20,7 @@ onMounted(async () => {
   <div class="grid">
     <div class="col-12">
       <div class="card">
-        <h5>Categorias</h5>
+        <h5>Categorias e Tamanhos</h5>
         <DataTable
           :value="data.list"
           lazy

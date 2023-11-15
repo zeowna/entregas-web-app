@@ -1,13 +1,13 @@
 <template>
   <div class="grid">
-    <div class="col-12">
-      <Button label="Criar Parceiro" @click="goToPartner()" />
+    <div class="md:col-12 sm:col-12">
+      <Button label="Criar Produto" @click="goToPartnerProduct(+route.params.partnerId)" />
     </div>
   </div>
   <div class="grid">
     <div class="col-12">
       <div class="card">
-        <h5>Lista de Parceiros</h5>
+        <h5>Produtos</h5>
         <DataTable
           :value="data.list"
           lazy
@@ -21,32 +21,38 @@
           <Column header="Foto">
             <template #body="slotProps">
               <img
-                v-if="slotProps.data.pictureURI"
-                :src="slotProps.data.pictureURI"
+                v-if="slotProps.data.product.pictureURI"
+                :src="slotProps.data.product.pictureURI"
                 class="w-6rem shadow-2 border-round"
               />
             </template>
           </Column>
-          <Column field="name" header="Nome"></Column>
-          <Column header="Endereço">
+          <Column header="Nome">
             <template #body="slotProps">
-              {{ slotProps.data?.address?.street }} {{ slotProps.data?.address?.number }}
+              {{ slotProps.data.product.name }}
             </template>
           </Column>
+          <Column header="Valor">
+            <template #body="slotProps">
+              {{ centsToCurrency(slotProps.data.value) }}
+            </template>
+          </Column>
+          <Column header="Em estoque" field="inStockQuantity"></Column>
           <Column header="Status">
             <template #body="slotProps">
               <Tag
-                v-if="slotProps.data.status === PartnerStatuses.Active"
+                v-if="slotProps.data.status === ProductStatus.Active"
                 value="Ativo"
                 severity="success"
               />
               <Tag
-                v-if="slotProps.data.status === PartnerStatuses.Inactive"
+                v-if="slotProps.data.status === ProductStatus.Inactive"
                 value="Inativo"
                 severity="danger"
               />
             </template>
           </Column>
+
           <Column field="updatedAt" header="Data Edição">
             <template #body="slotProps">
               {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -
@@ -57,18 +63,11 @@
             <template #body="slotProps">
               <Button
                 severity="success"
-                v-tooltip="'Editar Parceiro'"
+                v-tooltip="'Editar Produto'"
                 :icon="PrimeIcons.PENCIL"
-                @click="goToPartner(slotProps.data.id)"
-                class="mr-2"
-              />
-
-              <Button
-                severity="info"
-                v-tooltip="'Listar Usuários'"
-                :icon="PrimeIcons.USERS"
-                @click="goToPartnerUsers(slotProps.data.id)"
-                class="mr-2"
+                @click="
+                  goToPartnerProduct(route.params.partnerId as unknown as number, slotProps.data.id)
+                "
               />
             </template>
           </Column>
@@ -79,27 +78,34 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
-import { useListPartners } from '@/composables'
-import { PartnerStatuses } from '@/services/api/types'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { store } from '@/store'
+import { PartnerUser, ProductStatus } from '@/services/api/types'
+import { useListPartnerProducts } from '@/composables'
+import { centsToCurrency } from '@/utils'
 
 const router = useRouter()
+const route = useRoute()
+const user = computed(() => store.getters.getUser)
 
-const { isLoading, data, onPage, findPartners, goToPartner } = useListPartners()
-
-const goToPartnerUsers = async (partnerId: number) => {
-  await router.push({
-    name: 'list-partner-users',
-    params: {
-      partnerId
-    }
-  })
-}
+const { isLoading, data, onPage, findPartnerProducts, goToPartnerProduct } =
+  useListPartnerProducts()
 
 onMounted(async () => {
-  await findPartners()
+  const partnerUser = user.value as PartnerUser
+
+  if (partnerUser?.partner && partnerUser?.partner?.id !== +route.params.partnerId) {
+    await router.push({
+      name: 'list-partner-products',
+      params: {
+        partnerId: partnerUser?.partner?.id
+      }
+    })
+  }
+
+  await findPartnerProducts(+route.params.partnerId)
 })
 </script>
 

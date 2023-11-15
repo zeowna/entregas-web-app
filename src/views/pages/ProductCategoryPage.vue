@@ -37,7 +37,7 @@
       <div class="card p-fluid">
         <div class="grid">
           <div class="col">
-            <h5>Tamanho de Embalagem</h5>
+            <h5>Tamanhos da Categoria</h5>
 
             <div class="grid">
               <div class="md:col-4 col-12">

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { store } from '@/store'
-import { UserTypes } from '@/services/api/types'
+import { PartnerUser, UserTypes } from '@/services/api/types'
 import AppMenuItem from '@/layout/AppMenuItem.vue'
 
 const user = computed(() => store.getters.getUser)
@@ -11,10 +11,11 @@ const adminMenu = [
     label: 'Admin',
     items: [{ label: 'Listar Usuários Admin', icon: 'pi pi-user', to: '/admin/users' }]
   },
+  { separator: true },
   {
     label: 'Produtos',
     items: [
-      { label: 'Listar Categorias', icon: 'pi pi-hashtag', to: '/product-categories' },
+      { label: 'Listar Categorias/Tamanhos', icon: 'pi pi-hashtag', to: '/product-categories' },
       { label: 'Listar Produtos', icon: 'pi pi-tags', to: '/products' }
     ]
   },
@@ -25,30 +26,50 @@ const adminMenu = [
   }
 ]
 
-const partnerManu = [
+const partnerMenu = [
   {
-    label: 'Pedidos',
-    items: [{ label: 'Listar Pedidos', icon: 'pi pi-shopping-cart', to: '/orders' }]
+    label: 'Usuários',
+    items: [
+      {
+        label: 'Listar Usuarios',
+        icon: 'pi pi-user',
+        to: `/partners/${(user.value as PartnerUser).partner?.id}/users`
+      }
+    ]
   },
   { separator: true },
   {
-    label: 'Usuários',
-    items: [{ label: 'Listar Usuarios', icon: 'pi pi-user', to: '/users' }]
+    label: 'Estoque',
+    items: [
+      {
+        label: 'Listar Produtos',
+        icon: 'pi pi-tags',
+        to: `/partners/${(user.value as PartnerUser).partner?.id}/products`
+      }
+    ]
+  },
+  { separator: true },
+  {
+    label: 'Pedidos',
+    items: [{ label: 'Listar Pedidos', icon: 'pi pi-shopping-cart', to: '/orders' }]
   }
 ]
 
-const model = computed(() => {
-  if (user.value?.type) {
-    return user.value.type === UserTypes.Admin ? adminMenu : partnerManu
+const menu = computed(() => {
+  switch (user.value?.type) {
+    case UserTypes.Admin:
+      return adminMenu
+    case UserTypes.Partner:
+      return partnerMenu
+    default:
+      return []
   }
-
-  return []
 })
 </script>
 
 <template>
   <ul class="layout-menu">
-    <template v-for="(item, i) in model" :key="item">
+    <template v-for="(item, i) in menu" :key="item">
       <AppMenuItem v-if="!item.separator" :item="item" :index="i"></AppMenuItem>
       <li v-if="item.separator" class="menu-separator"></li>
     </template>

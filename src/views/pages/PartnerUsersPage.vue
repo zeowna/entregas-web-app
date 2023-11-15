@@ -2,6 +2,7 @@
   <div class="grid">
     <div class="md:col-12 sm:col-12">
       <Button
+        v-if="user.type === UserTypes.Admin"
         label="Dados do Parceiro"
         severity="info"
         class="mr-2"
@@ -13,7 +14,7 @@
   <div class="grid">
     <div class="col-12">
       <div class="card">
-        <h5>Usuários</h5>
+        <h5>Usuários do Parceiro</h5>
         <DataTable
           :value="data.list"
           lazy
@@ -59,13 +60,17 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
 import { useListPartnerUsers } from '@/composables/useListPartnerUsers'
 import { useRoute, useRouter } from 'vue-router'
+import { store } from '@/store'
+import { PartnerUser, UserTypes } from '@/services/api/types'
 
 const router = useRouter()
 const route = useRoute()
+const user = computed(() => store.getters.getUser)
+
 const { isLoading, data, onPage, findPartnerUsers, goToPartnerUser } = useListPartnerUsers()
 
 const goToPartner = async (partnerId: number) => {
@@ -78,6 +83,17 @@ const goToPartner = async (partnerId: number) => {
 }
 
 onMounted(async () => {
+  const partnerUser = user.value as PartnerUser
+
+  if (partnerUser?.partner && partnerUser?.partner?.id !== +route.params.partnerId) {
+    await router.push({
+      name: 'list-partner-users',
+      params: {
+        partnerId: partnerUser?.partner?.id
+      }
+    })
+  }
+
   await findPartnerUsers(+route.params.partnerId)
 })
 </script>

@@ -93,7 +93,10 @@ const togglePasswordFields = () => {
 }
 
 const updateMe = async () => {
-  const updated = await Api.me.update(me.value)
+  const updated = await Api.me.update({
+    ...me.value,
+    password: undefined
+  })
 
   me.value = {
     ...updated,
@@ -108,7 +111,7 @@ const updateMe = async () => {
 }
 
 const updateMyPassword = async () => {
-  await Api.me.updateMyPassword(me.value.password)
+  await Api.me.updateMyPassword(me.value.password as string)
 }
 
 const saveMe = (toast: ToastServiceMethods) => async () => {
