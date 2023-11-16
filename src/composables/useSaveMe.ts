@@ -41,8 +41,6 @@ const rules = computed(() => ({
   birthday: { required: helpers.withMessage('Data de nascimento é obrigatório', required) },
   cpf: { required: helpers.withMessage('CPF é obrigatório', required) },
   email: { required: helpers.withMessage('E-mail é obrigatório', required) },
-  password: {},
-  passwordConfirmation: {},
   ...(passwordFieldEnabled.value ? passwordRules.value : {})
 }))
 

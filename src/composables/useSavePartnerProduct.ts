@@ -18,9 +18,10 @@ const partnerProduct = ref<PartnerProduct>({
 })
 
 const rules = computed(() => ({
-  value: { required: helpers.withMessage('Nome é obrigatório', required) },
-  inStockQuantity: { required: helpers.withMessage('Data de nascimento é obrigatório', required) },
-  status: {}
+  value: { required: helpers.withMessage('Valor é obrigatório', required) },
+  inStockQuantity: {
+    required: helpers.withMessage('Quantidate em estoque é obrigatório', required)
+  }
 }))
 
 const v$ = useVuelidate(rules, partnerProduct)

@@ -3,71 +3,65 @@
     <div class="col-12">
       <div class="card p-fluid">
         <h5>Selecionar Produto</h5>
-        <DataView :value="data.list" layout="grid">
-          <template #header>
-            <div class="grid">
-              <div class="field col-12 md:col-6">
-                <label for="category">Categoria</label>
-                <Dropdown
-                  id="category"
-                  v-model="conditions.category"
-                  :options="productCategories.list"
-                  option-value="id"
-                  option-label="name"
-                  show-clear
-                  filter
-                  placeholder="Selecione a Categoria do Produto"
-                  @change="searchWithCategory($event)"
-                />
-              </div>
-              <div class="field col-12 md:col-6">
-                <label for="name">Tamanho</label>
-                <Dropdown
-                  id="size"
-                  v-model="conditions.size"
-                  :options="sizes"
-                  :disabled="!conditions.category"
-                  option-value="name"
-                  option-label="name"
-                  show-clear
-                  filter
-                  placeholder="Selecione o Tamanho do Produto"
-                  @change="searchWithSize($event)"
-                />
-              </div>
-            </div>
-          </template>
 
-          <template #grid="slotProps">
-            <div class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2">
-              <div class="p-4 border-1 surface-border surface-card border-round">
-                <div class="flex flex-wrap align-items-center justify-content-between gap-2">
-                  <div class="flex align-items-center gap-2">
-                    <i class="pi pi-tag"></i>
-                    <span class="font-semibold">{{ slotProps.data.category.name }}</span>
-                  </div>
-                </div>
-                <div class="flex flex-column align-items-center gap-3 py-5">
-                  <img
-                    class="w-9 shadow-2 border-round"
-                    :src="slotProps.data.pictureURI"
-                    :alt="`${slotProps.data.name} -  ${slotProps.data.size}`"
-                  />
-                  <div class="text-2xl font-bold">
-                    {{ slotProps.data.name }} - {{ slotProps.data.size }}
-                  </div>
-                </div>
-                <div class="flex align-items-center justify-content-between">
-                  <Button
-                    severity="primary"
-                    label="Selecionar"
-                    @click="selectProduct(slotProps.data)"
-                  />
+        <div class="grid">
+          <div class="field col-12 md:col-6">
+            <label for="category">Categoria</label>
+            <Dropdown
+              id="category"
+              v-model="conditions.category"
+              :options="productCategories.list"
+              option-value="id"
+              option-label="name"
+              show-clear
+              filter
+              placeholder="Selecione a Categoria do Produto"
+              @change="searchWithCategory($event)"
+            />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label for="name">Tamanho</label>
+            <Dropdown
+              id="size"
+              v-model="conditions.size"
+              :options="sizes"
+              :disabled="!conditions.category"
+              option-value="name"
+              option-label="name"
+              show-clear
+              filter
+              placeholder="Selecione o Tamanho do Produto"
+              @change="searchWithSize"
+            />
+          </div>
+        </div>
+        <div class="grid">
+          <div
+            class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2"
+            v-for="product in data.list"
+            :key="product.id"
+          >
+            <div class="p-4 border-1 surface-border surface-card border-round">
+              <div class="flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="flex align-items-center gap-2">
+                  <i class="pi pi-tag"></i>
+                  <span class="font-semibold">{{ product.category?.name }}</span>
                 </div>
               </div>
+              <div class="flex flex-column align-items-center gap-3 py-5">
+                <img
+                  class="w-9 shadow-2 border-round"
+                  :src="product.pictureURI"
+                  :alt="`${product.name} -  ${product.size}`"
+                />
+                <div class="text-2xl font-bold">{{ product.name }} - {{ product.size }}</div>
+              </div>
+              <div class="flex align-items-center justify-content-between">
+                <Button severity="primary" label="Selecionar" @click="selectProduct(product)" />
+              </div>
             </div>
-          </template>
-        </DataView>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -140,7 +134,7 @@
                     <div class="grid">
                       <div class="field-radiobutton col-12 md:col-6">
                         <RadioButton
-                          v-model="v$.status.$model"
+                          v-model="partnerProduct.status"
                           id="status-active"
                           name="status"
                           value="active"
@@ -150,7 +144,7 @@
                       </div>
                       <div class="field-radiobutton col-12 md:col-6">
                         <RadioButton
-                          v-model="v$.status.$model"
+                          v-model="partnerProduct.status"
                           id="status-inactive"
                           name="status"
                           value="inactive"
