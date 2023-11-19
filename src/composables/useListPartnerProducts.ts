@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { FindEntitiesPaging, FindEntitiesResponse, PartnerProduct } from '@/services/api/types'
 import { Api } from '@/services/api/Api'
-import { DataTablePageEvent } from 'primevue/datatable'
+import { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 
@@ -27,6 +27,13 @@ export const useListPartnerProducts = () => {
     isLoading.value = true
     data.value = await Api.partners.products.find(partnerId, params.value)
     isLoading.value = false
+  }
+
+  const onSort = async (e: DataTableSortEvent) => {
+    params.value.sort = {
+      [e.sortField as string]: e.sortOrder
+    }
+    await findPartnerProducts(partnerId.value!)
   }
 
   const onSearch = async () => {
@@ -65,6 +72,7 @@ export const useListPartnerProducts = () => {
     data,
     isLoading,
     findPartnerProducts,
+    onSort,
     onSearch,
     onPage,
     goToPartnerProduct

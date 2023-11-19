@@ -11,6 +11,9 @@
           :totalRecords="data.count"
           :loading="isLoading"
           @page="onPage($event)"
+          @sort="onSort"
+          sortField="updatedAt"
+          :sortOrder="-1"
         >
           <template #header>
             <div class="flex flex-wrap align-items-center justify-content-start">
@@ -35,18 +38,18 @@
               />
             </template>
           </Column>
-          <Column header="Nome">
+          <Column field="name" header="Nome" sortable>
             <template #body="slotProps">
               {{ slotProps.data.product.name }} {{ slotProps.data.product.size }}
             </template>
           </Column>
-          <Column header="Valor">
+          <Column field="value" header="Valor" sortable>
             <template #body="slotProps">
               {{ centsToCurrency(slotProps.data.value) }}
             </template>
           </Column>
           <Column header="Em estoque" field="inStockQuantity"></Column>
-          <Column header="Status">
+          <Column field="status" header="Status" sortable>
             <template #body="slotProps">
               <Tag
                 v-if="slotProps.data.status === ProductStatus.Active"
@@ -61,7 +64,7 @@
             </template>
           </Column>
 
-          <Column field="updatedAt" header="Data Edição">
+          <Column field="updatedAt" header="Data Edição" sortable>
             <template #body="slotProps">
               {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -
               {{ new Date(slotProps.data.updatedAt).toLocaleTimeString() }}
@@ -98,8 +101,16 @@ const router = useRouter()
 const route = useRoute()
 const user = computed(() => store.getters.getUser)
 
-const { isLoading, productName, data, onSearch, onPage, findPartnerProducts, goToPartnerProduct } =
-  useListPartnerProducts()
+const {
+  isLoading,
+  productName,
+  data,
+  onSort,
+  onSearch,
+  onPage,
+  findPartnerProducts,
+  goToPartnerProduct
+} = useListPartnerProducts()
 
 onMounted(async () => {
   const partnerUser = user.value as PartnerUser
