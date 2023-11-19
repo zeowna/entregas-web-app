@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { FindEntitiesPaging, FindEntitiesResponse, Partner } from '@/services/api/types'
 import { Api } from '@/services/api/Api'
-import { DataTablePageEvent } from 'primevue/datatable'
+import { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import router from '@/router'
 
 export const useListPartners = () => {
@@ -14,19 +14,39 @@ export const useListPartners = () => {
     limit: 0,
     pages: 0
   })
+  const params = ref<FindEntitiesPaging>({
+    conditions: {},
+    skip: 0,
+    limit: 25
+  })
+  const partnerName = ref<string | null>()
   const isLoading = ref(false)
 
-  const findPartners = async (params: FindEntitiesPaging = { limit }) => {
+  const findPartners = async () => {
     isLoading.value = true
-    data.value = await Api.partners.find(params)
+    data.value = await Api.partners.find(params.value)
     isLoading.value = false
   }
 
+  const onSort = async (e: DataTableSortEvent) => {
+    params.value.sort = {
+      [e.sortField as string]: e.sortOrder
+    }
+    await findPartners()
+  }
+
+  const onSearch = async () => {
+    params.value.conditions = {
+      name: { contains: (partnerName.value || '').trim() }
+    }
+
+    await findPartners()
+  }
+
   const onPage = async (e: DataTablePageEvent) => {
-    await findPartners({
-      skip: data.value.limit * e.page,
-      limit
-    })
+    params.value.skip = data.value.limit * e.page
+
+    await findPartners()
   }
 
   const goToPartner = async (id?: number) => {
@@ -46,8 +66,11 @@ export const useListPartners = () => {
 
   return {
     data,
+    partnerName,
     isLoading,
     findPartners,
+    onSort,
+    onSearch,
     onPage,
     goToPartner
   }

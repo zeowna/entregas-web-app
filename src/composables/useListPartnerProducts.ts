@@ -7,11 +7,12 @@ import { useRoute } from 'vue-router'
 
 export const useListPartnerProducts = () => {
   const route = useRoute()
-  const limit = 25
-  const partnerId = computed(() =>
-    route.params.partnerId ? Number.parseInt(route.params.partnerId as string) : null
-  )
-
+  const partnerId = computed(() => (route.params.partnerId ? +route.params.partnerId : null))
+  const params = ref<FindEntitiesPaging>({
+    conditions: {},
+    skip: 0,
+    limit: 25
+  })
   const data = ref<FindEntitiesResponse<PartnerProduct>>({
     list: [],
     count: 0,
@@ -19,19 +20,27 @@ export const useListPartnerProducts = () => {
     limit: 0,
     pages: 0
   })
+  const productName = ref<string | null>()
   const isLoading = ref(false)
 
-  const findPartnerProducts = async (partnerId: number, params: FindEntitiesPaging = { limit }) => {
+  const findPartnerProducts = async (partnerId: number) => {
     isLoading.value = true
-    data.value = await Api.partners.products.find(partnerId, params)
+    data.value = await Api.partners.products.find(partnerId, params.value)
     isLoading.value = false
   }
 
+  const onSearch = async () => {
+    params.value.conditions = {
+      name: { contains: (productName.value || '').trim() }
+    }
+
+    await findPartnerProducts(partnerId.value as number)
+  }
+
   const onPage = async (e: DataTablePageEvent) => {
-    await findPartnerProducts(partnerId.value as number, {
-      skip: data.value.limit * e.page,
-      limit
-    })
+    params.value.skip = data.value.limit * e.page
+
+    await findPartnerProducts(partnerId.value as number)
   }
 
   const goToPartnerProduct = async (partnerId: number, id?: number) => {
@@ -51,9 +60,12 @@ export const useListPartnerProducts = () => {
   }
 
   return {
+    params,
+    productName,
     data,
     isLoading,
     findPartnerProducts,
+    onSearch,
     onPage,
     goToPartnerProduct
   }

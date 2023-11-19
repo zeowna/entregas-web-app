@@ -1,36 +1,36 @@
-<script lang="ts" setup>
-import { onMounted } from 'vue'
-import { PrimeIcons } from 'primevue/api'
-import { useListProducts } from '@/composables'
-import { ProductStatus } from '@/services/api/types'
-
-const { isLoading, data, onPage, findProducts, goToProduct } = useListProducts()
-
-onMounted(async () => {
-  await findProducts()
-})
-</script>
-
 <template>
   <div class="grid">
     <div class="col-12">
-      <Button label="Criar Produto" @click="goToProduct()" />
-    </div>
-  </div>
-  <div class="grid">
-    <div class="col-12">
-      <div class="card">
-        <h5>Produtos</h5>
+      <div class="card p-2">
         <DataTable
           :value="data.list"
           lazy
           paginator
+          row-hover
           :first="0"
           :rows="data.limit"
           :totalRecords="data.count"
           :loading="isLoading"
           @page="onPage($event)"
+          @sort="onSort"
+          sortField="updatedAt"
+          :sortOrder="-1"
         >
+          <template #header>
+            <div class="flex flex-wrap align-items-center justify-content-start">
+              <h5>Listar Produtos</h5>
+            </div>
+
+            <div class="flex flex-wrap align-items-center justify-content-between">
+              <Button label="Criar Produto" @click="goToProduct()" />
+
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText v-model="productName" placeholder="Nome do Produto" @blur="onSearch" />
+              </span>
+            </div>
+          </template>
+
           <Column header="Foto">
             <template #body="slotProps">
               <img
@@ -40,14 +40,14 @@ onMounted(async () => {
               />
             </template>
           </Column>
-          <Column field="name" header="Nome"></Column>
-          <Column field="size" header="Tamanho"></Column>
-          <Column header="Categoria">
+          <Column field="name" header="Nome" sortable></Column>
+          <Column field="size" header="Tamanho" sortable></Column>
+          <Column field="category" header="Categoria" sortable>
             <template #body="slotProps">
               {{ slotProps.data.category.name }}
             </template>
           </Column>
-          <Column header="Status">
+          <Column field="status" header="Status" sortable>
             <template #body="slotProps">
               <Tag
                 v-if="slotProps.data.status === ProductStatus.Active"
@@ -61,13 +61,7 @@ onMounted(async () => {
               />
             </template>
           </Column>
-          <Column field="createdAt" header="Data Criação">
-            <template #body="slotProps">
-              {{ new Date(slotProps.data.createdAt).toLocaleDateString() }} -
-              {{ new Date(slotProps.data.createdAt).toLocaleTimeString() }}
-            </template>
-          </Column>
-          <Column field="updatedAt" header="Data Edição">
+          <Column field="updatedAt" header="Data Edição" sortable>
             <template #body="slotProps">
               {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -
               {{ new Date(slotProps.data.updatedAt).toLocaleTimeString() }}
@@ -88,6 +82,20 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { onMounted } from 'vue'
+import { PrimeIcons } from 'primevue/api'
+import { useListProducts } from '@/composables'
+import { ProductStatus } from '@/services/api/types'
+
+const { isLoading, productName, data, onSearch, onSort, onPage, findProducts, goToProduct } =
+  useListProducts()
+
+onMounted(async () => {
+  await findProducts()
+})
+</script>
 
 <style scoped lang="scss">
 @import '@/assets/demo/styles/badges.scss';

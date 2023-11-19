@@ -5,42 +5,64 @@
         <h5>Selecionar Produto</h5>
 
         <div class="grid">
-          <div class="field col-12 md:col-6">
-            <label for="category">Categoria</label>
-            <Dropdown
-              id="category"
-              v-model="conditions.category"
-              :options="productCategories.list"
-              option-value="id"
-              option-label="name"
-              show-clear
-              filter
-              placeholder="Selecione a Categoria do Produto"
-              @change="searchWithCategory($event)"
-            />
-          </div>
-          <div class="field col-12 md:col-6">
-            <label for="name">Tamanho</label>
-            <Dropdown
-              id="size"
-              v-model="conditions.size"
-              :options="sizes"
-              :disabled="!conditions.category"
-              option-value="name"
-              option-label="name"
-              show-clear
-              filter
-              placeholder="Selecione o Tamanho do Produto"
-              @change="searchWithSize"
-            />
+          <div class="col-12">
+            <Fieldset legend="Filtro de Produtos">
+              <form @submit.prevent="searchForProducts">
+                <div class="grid">
+                  <div class="field col-12 md:col-6">
+                    <label for="category">Categoria</label>
+                    <Dropdown
+                      id="category"
+                      v-model="conditionsParams.category"
+                      :options="productCategories.list"
+                      option-value="id"
+                      option-label="name"
+                      show-clear
+                      filter
+                      placeholder="Selecione a Categoria do Produto"
+                      @change="loadSizes"
+                    />
+                  </div>
+                  <div class="field col-12 md:col-6">
+                    <label for="size">Tamanho</label>
+                    <Dropdown
+                      id="size"
+                      v-model="conditionsParams.size"
+                      :options="sizes.list"
+                      :disabled="!conditionsParams.category"
+                      option-value="name"
+                      option-label="name"
+                      show-clear
+                      filter
+                      placeholder="Selecione o Tamanho do Produto"
+                    />
+                  </div>
+                  <div class="field col-12 md:col-12">
+                    <label for="name">Nome</label>
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-search" />
+                      <InputText
+                        v-model="conditionsParams.name"
+                        placeholder="Buscar pelo Nome do Produto"
+                        show-clear
+                      />
+                    </span>
+                  </div>
+
+                  <Button type="submit" severity="primary" label="Buscar" />
+                </div>
+              </form>
+            </Fieldset>
           </div>
         </div>
-        <div class="grid">
-          <div
-            class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2"
-            v-for="product in data.list"
-            :key="product.id"
-          >
+        <div class="grid" v-if="isLoadingProducts">
+          <div class="col-12 align-content-center text-center">
+            <ProgressSpinner></ProgressSpinner>
+          </div>
+        </div>
+
+        <div class="grid" v-if="!isLoadingProducts">
+          <div class="col-12 sm:col-12 md:col-3" v-for="product in data.list" :key="product.id">
             <div class="p-4 border-1 surface-border surface-card border-round">
               <div class="flex flex-wrap align-items-center justify-content-between gap-2">
                 <div class="flex align-items-center gap-2">
@@ -52,7 +74,7 @@
                 <img
                   class="w-9 shadow-2 border-round"
                   :src="product.pictureURI"
-                  :alt="`${product.name} -  ${product.size}`"
+                  :alt="`${product.name} - ${product.size}`"
                 />
                 <div class="text-2xl font-bold">{{ product.name }} - {{ product.size }}</div>
               </div>
@@ -169,6 +191,8 @@
       </div>
     </div>
   </div>
+
+  <LoadingSpinner :isLoading="isLoading" />
 </template>
 
 <script setup lang="ts">
@@ -181,10 +205,12 @@ import {
 } from '@/composables'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Product, ProductStatus } from '@/services/api/types'
 import Dropdown, { DropdownChangeEvent } from 'primevue/dropdown'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
+const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 
@@ -195,14 +221,22 @@ const {
   reset: resetSizes
 } = useSaveProductCategorySizes(toast)
 
-const { data, findProducts } = useListProducts()
+const { isLoading: isLoadingProducts, params, data, findProducts } = useListProducts()
 
-const { isLoading, v$, partnerProduct, findByPartnerIdAndId, reset, savePartnerProduct } =
-  useSavePartnerProduct(+route.params?.partnerId, toast)
+const {
+  isLoading,
+  v$,
+  partnerProduct,
+  findByPartnerIdAndId,
+  findByPartnerIdAndProductId,
+  reset,
+  savePartnerProduct
+} = useSavePartnerProduct(+route.params?.partnerId, toast)
 
-const conditions = ref({
+const conditionsParams = ref({
   category: null,
-  size: null
+  size: null,
+  name: null
 })
 
 const product = ref<Product>({
@@ -213,33 +247,64 @@ const product = ref<Product>({
   status: ProductStatus.Active
 })
 
-const searchWithCategory = async (e: DropdownChangeEvent) => {
+const searchForProducts = async () => {
+  const conditions: Record<string, any> = {}
+
+  if (conditionsParams.value.category) {
+    conditions.category = { eq: conditionsParams.value.category }
+  }
+
+  if (conditionsParams.value.size) {
+    conditions.size = { eq: conditionsParams.value.size }
+  }
+
+  if (conditionsParams.value.name) {
+    conditions.name = { contains: conditionsParams.value.name }
+  }
+
+  if (!Object.values(conditions).length) {
+    data.value.list = []
+    return
+  }
+
+  params.value.conditions = conditions
+  params.value.sort = { category: 1 }
+
+  await findProducts()
+}
+
+const loadSizes = async (e: DropdownChangeEvent) => {
+  if (!e.value) {
+    conditionsParams.value.size = null
+    data.value.list = []
+    return
+  }
+
   await findProductCategorySizes(e.value)
-
-  await findProducts({
-    conditions: {
-      category: { eq: conditions.value.category },
-      // size: { eq: conditions.value.size },
-      status: { eq: ProductStatus.Active }
-    },
-    sort: { category: 1 }
-  })
 }
 
-const searchWithSize = async () => {
-  await findProducts({
-    conditions: {
-      category: { eq: conditions.value.category },
-      size: { eq: conditions.value.size },
-      status: { eq: ProductStatus.Active }
-    },
-    sort: { category: 1 }
-  })
-}
-
-const selectProduct = (selectedProduct: Product) => {
+const selectProduct = async (selectedProduct: Product) => {
   product.value = selectedProduct
   partnerProduct.value.productId = product.value.id
+  partnerProduct.value.product = selectedProduct
+
+  const existing = await findByPartnerIdAndProductId(
+    +route.params.partnerId,
+    selectedProduct.id as number
+  )
+
+  if (existing) {
+    await findByPartnerIdAndId(+route.params.partnerId, existing.id as number)
+
+    await router.push({
+      name: 'edit-partner-product',
+      force: true,
+      params: {
+        partnerId: +route.params.partnerId,
+        id: existing.id
+      }
+    })
+  }
 }
 
 onMounted(async () => {
@@ -257,11 +322,11 @@ onMounted(async () => {
 })
 
 watch(
-  () => conditions.value.category,
+  () => conditionsParams.value.category,
   async (value) => {
     if (!value) {
       resetSizes()
-      conditions.value.size = null
+      conditionsParams.value.size = null
     }
   }
 )

@@ -69,13 +69,12 @@ onMounted(() => {
                 >Senha</label
               >
               <InputText
-                id="password1"
+                type="password"
                 v-model="v$.password.$model"
                 placeholder="Insira sua Senha"
-                :toggleMask="true"
                 class="w-full mb-3 w-full padding:1rem"
                 :class="v$.password.$error ? 'p-invalid' : ''"
-                type="password"
+                id="password"
               />
               <br />
               <FieldError :errors="v$.password.$errors" />

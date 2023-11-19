@@ -1,20 +1,7 @@
 <template>
   <div class="grid">
-    <div class="md:col-12 sm:col-12">
-      <Button
-        v-if="user.type === UserTypes.Admin"
-        label="Dados do Parceiro"
-        severity="info"
-        class="mr-2"
-        @click="goToPartner(+route.params!.partnerId)"
-      />
-      <Button label="Criar Usuário" @click="goToPartnerUser(+route.params.partnerId)" />
-    </div>
-  </div>
-  <div class="grid">
     <div class="col-12">
-      <div class="card">
-        <h5>Usuários do Parceiro</h5>
+      <div class="card p-2">
         <DataTable
           :value="data.list"
           lazy
@@ -25,6 +12,29 @@
           :loading="isLoading"
           @page="onPage($event)"
         >
+          <template #header>
+            <div class="flex flex-wrap align-items-center justify-content-start">
+              <h5>Listar Usuários</h5>
+            </div>
+            <div class="flex flex-wrap justify-content-between">
+              <div class="flex justify-content-start">
+                <Button
+                  v-if="user.type === UserTypes.Admin"
+                  label="Dados do Parceiro"
+                  severity="info"
+                  class="mr-2"
+                  @click="goToPartner(+route.params!.partnerId)"
+                />
+                <Button label="Criar Usuário" @click="goToPartnerUser(+route.params.partnerId)" />
+              </div>
+              <div class="flexjustify-content-end">
+                <span class="p-input-icon-left">
+                  <i class="pi pi-search" />
+                  <InputText v-model="userName" placeholder="Nome do Usuário" @blur="onSearch" />
+                </span>
+              </div>
+            </div>
+          </template>
           <Column header="Foto">
             <template #body="slotProps">
               <img
@@ -71,7 +81,8 @@ const router = useRouter()
 const route = useRoute()
 const user = computed(() => store.getters.getUser)
 
-const { isLoading, data, onPage, findPartnerUsers, goToPartnerUser } = useListPartnerUsers()
+const { isLoading, userName, data, onSearch, onPage, findPartnerUsers, goToPartnerUser } =
+  useListPartnerUsers()
 
 const goToPartner = async (partnerId: number) => {
   await router.push({

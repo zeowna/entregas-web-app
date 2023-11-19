@@ -1,26 +1,7 @@
-<script lang="ts" setup>
-import { onMounted } from 'vue'
-import { PrimeIcons } from 'primevue/api'
-import { useListProductCategories } from '@/composables'
-
-const { isLoading, data, onPage, findProductCategories, goToProductCategory } =
-  useListProductCategories()
-
-onMounted(async () => {
-  await findProductCategories()
-})
-</script>
-
 <template>
   <div class="grid">
     <div class="col-12">
-      <Button label="Criar Categoria" @click="goToProductCategory()" />
-    </div>
-  </div>
-  <div class="grid">
-    <div class="col-12">
-      <div class="card">
-        <h5>Categorias e Tamanhos</h5>
+      <div class="card p-2">
         <DataTable
           :value="data.list"
           lazy
@@ -30,15 +11,28 @@ onMounted(async () => {
           :totalRecords="data.count"
           :loading="isLoading"
           @page="onPage($event)"
+          @sort="onSort"
+          sortField="updatedAt"
+          :sortOrder="-1"
         >
-          <Column field="name" header="Nome"></Column>
-          <Column field="createdAt" header="Data Criação">
-            <template #body="slotProps">
-              {{ new Date(slotProps.data.createdAt).toLocaleDateString() }} -
-              {{ new Date(slotProps.data.createdAt).toLocaleTimeString() }}
-            </template>
-          </Column>
-          <Column field="updatedAt" header="Data Edição">
+          <template #header>
+            <div class="flex flex-wrap align-items-center justify-content-start">
+              <h5>Listar Categorias/Tamanhos</h5>
+            </div>
+            <div class="flex flex-wrap justify-content-between">
+              <Button label="Criar Categoria" @click="goToProductCategory()" />
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText
+                  v-model="categoryName"
+                  placeholder="Nome da Categoria"
+                  @blur="onSearch"
+                />
+              </span>
+            </div>
+          </template>
+          <Column field="name" header="Nome" sortable></Column>
+          <Column field="updatedAt" header="Data Edição" sortable>
             <template #body="slotProps">
               {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -
               {{ new Date(slotProps.data.updatedAt).toLocaleTimeString() }}
@@ -59,6 +53,27 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { onMounted } from 'vue'
+import { PrimeIcons } from 'primevue/api'
+import { useListProductCategories } from '@/composables'
+
+const {
+  isLoading,
+  categoryName,
+  data,
+  onPage,
+  onSort,
+  onSearch,
+  findProductCategories,
+  goToProductCategory
+} = useListProductCategories()
+
+onMounted(async () => {
+  await findProductCategories()
+})
+</script>
 
 <style scoped lang="scss">
 @import '@/assets/demo/styles/badges.scss';

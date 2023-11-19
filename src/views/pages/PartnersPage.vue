@@ -1,13 +1,7 @@
 <template>
   <div class="grid">
     <div class="col-12">
-      <Button label="Criar Parceiro" @click="goToPartner()" />
-    </div>
-  </div>
-  <div class="grid">
-    <div class="col-12">
-      <div class="card">
-        <h5>Lista de Parceiros</h5>
+      <div class="card p-2">
         <DataTable
           :value="data.list"
           lazy
@@ -17,7 +11,23 @@
           :totalRecords="data.count"
           :loading="isLoading"
           @page="onPage($event)"
+          @sort="onSort"
+          sortField="updatedAt"
+          :sortOrder="-1"
         >
+          <template #header>
+            <div class="flex flex-wrap align-items-center justify-content-start">
+              <h5>Listar de Parceiros</h5>
+            </div>
+            <div class="flex flex-wrap justify-content-between">
+              <Button label="Criar Parceiro" @click="goToPartner()" />
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText v-model="partnerName" placeholder="Nome do Parceiro" @blur="onSearch" />
+              </span>
+            </div>
+          </template>
+
           <Column header="Foto">
             <template #body="slotProps">
               <img
@@ -27,13 +37,13 @@
               />
             </template>
           </Column>
-          <Column field="name" header="Nome"></Column>
+          <Column field="name" header="Nome" sortable></Column>
           <Column header="Endereço">
             <template #body="slotProps">
               {{ slotProps.data?.address?.street }} {{ slotProps.data?.address?.number }}
             </template>
           </Column>
-          <Column header="Status">
+          <Column field="status" header="Status" sortable>
             <template #body="slotProps">
               <Tag
                 v-if="slotProps.data.status === PartnerStatuses.Active"
@@ -47,7 +57,7 @@
               />
             </template>
           </Column>
-          <Column field="updatedAt" header="Data Edição">
+          <Column field="updatedAt" header="Data Edição" sortable>
             <template #body="slotProps">
               {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -
               {{ new Date(slotProps.data.updatedAt).toLocaleTimeString() }}
@@ -87,7 +97,8 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const { isLoading, data, onPage, findPartners, goToPartner } = useListPartners()
+const { isLoading, partnerName, data, onSort, onSearch, onPage, findPartners, goToPartner } =
+  useListPartners()
 
 const goToPartnerUsers = async (partnerId: number) => {
   await router.push({

@@ -16,11 +16,16 @@
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <button @click="goToMyData" class="p-link layout-topbar-button">
-        <i class="pi pi-user"></i>
-        <span>Meus Dados</span>
+      <button
+        @click="goToMyData"
+        class="p-link layout-topbar-button"
+        v-tooltip.bottom="'Meus dados'"
+      >
+        <i class="pi pi-user" v-if="!user.profilePictureURI"></i>
+        <img v-if="user.profilePictureURI" :src="user.profilePictureURI" class="profile-picture" />
+        <span>Meus dados</span>
       </button>
-      <button @click="signOut" class="p-link layout-topbar-button">
+      <button @click="signOut" class="p-link layout-topbar-button" v-tooltip.bottom="'Sair'">
         <i class="pi pi-power-off"></i>
         <span>Sair</span>
       </button>
@@ -34,8 +39,10 @@ import { useLayout } from '@/layout/composables/layout'
 import { useRouter } from 'vue-router'
 import AppLogo from '@/layout/AppLogo.vue'
 import { useSignOut } from '@/composables'
+import { store } from '@/store'
 
-const { layoutConfig, onMenuToggle } = useLayout()
+const { onMenuToggle } = useLayout()
+const user = computed(() => store.getters.getUser)
 
 const outsideClickListener = ref<any>(null)
 const topbarMenuActive = ref(false)
@@ -99,4 +106,9 @@ const isOutsideClicked = (event: any) => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.profile-picture {
+  border-radius: 50%;
+  width: 25px;
+}
+</style>

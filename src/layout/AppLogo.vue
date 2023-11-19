@@ -1,5 +1,5 @@
 <template>
-  <span>Entre<span class="logo-red">Gas</span></span>
+  <span>Entre<span class="logo-red">gas</span></span>
 </template>
 
 <style lang="scss" scoped>

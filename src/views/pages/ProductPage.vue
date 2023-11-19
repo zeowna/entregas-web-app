@@ -43,7 +43,7 @@
                     <Dropdown
                       id="size"
                       v-model="v$.size.$model"
-                      :options="sizes"
+                      :options="sizes.list"
                       option-value="name"
                       option-label="name"
                       show-clear
@@ -90,6 +90,7 @@
       </div>
     </div>
   </div>
+  <LoadingSpinner :isLoading="isLoading" />
 </template>
 
 <script setup lang="ts">
@@ -104,6 +105,7 @@ import FieldError from '@/components/FieldError.vue'
 import Dropdown, { DropdownChangeEvent } from 'primevue/dropdown'
 import { useRoute } from 'vue-router'
 import PictureUploader from '@/components/PictureUploader.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
 const toast = useToast()

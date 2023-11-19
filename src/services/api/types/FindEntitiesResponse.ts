@@ -1,13 +1,13 @@
 import { Entity } from '@/services/api/types/Entity'
 
 export interface FindEntitiesResponse<T extends Entity> {
-  readonly list: T[]
+  list: T[]
 
-  readonly count: number
+  count: number
 
-  readonly skip: number
+  skip: number
 
-  readonly limit: number
+  limit: number
 
-  readonly pages: number
+  pages: number
 }

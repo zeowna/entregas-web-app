@@ -43,13 +43,14 @@ const findProductById = async (id: number) => {
     isLoading.value = true
     product.value = await Api.products.findById(id)
     product.value.categoryId = product.value?.category?.id
-    isLoading.value = false
   } catch (err) {
     if (err instanceof NotFoundError) {
       await router.push({ name: 'create-product' })
     }
 
     throw err
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -58,6 +59,7 @@ const uploadPicture = async () => {
 }
 const createProduct = async () => {
   product.value = await Api.products.create(product.value)
+  product.value.categoryId = product.value?.category?.id
 
   if (file.value) {
     await uploadPicture()
@@ -66,6 +68,7 @@ const createProduct = async () => {
 
 const updateProduct = async () => {
   product.value = await Api.products.update(product.value!.id as number, product.value)
+  product.value.categoryId = product.value?.category?.id
 
   if (file.value) {
     await uploadPicture()

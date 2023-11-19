@@ -8,6 +8,7 @@ export enum PartnerProductStatus {
 }
 
 export interface PartnerProduct extends Entity {
+  name?: string
   partner?: Partner
   product?: Partial<Product>
   productId?: number

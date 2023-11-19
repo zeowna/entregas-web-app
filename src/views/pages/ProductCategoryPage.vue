@@ -37,7 +37,7 @@
       <div class="card p-fluid">
         <div class="grid">
           <div class="col">
-            <h5>Tamanhos da Categoria</h5>
+            <h5>Tamanhos</h5>
 
             <div class="grid">
               <div class="md:col-4 col-12">
@@ -89,7 +89,7 @@
 
             <div class="grid">
               <div class="col-12">
-                <DataTable :value="data">
+                <DataTable :value="data.list">
                   <Column field="name" header="Nome"></Column>
                   <Column field="createdAt" header="Data Criação">
                     <template #body="slotProps">
@@ -121,6 +121,7 @@
       </div>
     </div>
   </div>
+  <LoadingSpinner :isLoading="isLoading" />
 </template>
 
 <script setup lang="ts">
@@ -130,6 +131,7 @@ import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
 import { PrimeIcons } from 'primevue/api'
 import { useSaveProductCategory, useSaveProductCategorySizes } from '@/composables'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
 const toast = useToast()

@@ -1,13 +1,7 @@
 <template>
   <div class="grid">
-    <div class="md:col-12 sm:col-12">
-      <Button label="Criar Produto" @click="goToPartnerProduct(+route.params.partnerId)" />
-    </div>
-  </div>
-  <div class="grid">
     <div class="col-12">
-      <div class="card">
-        <h5>Produtos</h5>
+      <div class="card p-2">
         <DataTable
           :value="data.list"
           lazy
@@ -18,6 +12,20 @@
           :loading="isLoading"
           @page="onPage($event)"
         >
+          <template #header>
+            <div class="flex flex-wrap align-items-center justify-content-start">
+              <h5>Listar Produtos</h5>
+            </div>
+
+            <div class="flex flex-wrap align-items-center justify-content-between">
+              <Button label="Criar Produto" @click="goToPartnerProduct(+route.params.partnerId)" />
+
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText v-model="productName" placeholder="Nome do Produto" @blur="onSearch" />
+              </span>
+            </div>
+          </template>
           <Column header="Foto">
             <template #body="slotProps">
               <img
@@ -29,7 +37,7 @@
           </Column>
           <Column header="Nome">
             <template #body="slotProps">
-              {{ slotProps.data.product.name }}
+              {{ slotProps.data.product.name }} {{ slotProps.data.product.size }}
             </template>
           </Column>
           <Column header="Valor">
@@ -90,7 +98,7 @@ const router = useRouter()
 const route = useRoute()
 const user = computed(() => store.getters.getUser)
 
-const { isLoading, data, onPage, findPartnerProducts, goToPartnerProduct } =
+const { isLoading, productName, data, onSearch, onPage, findPartnerProducts, goToPartnerProduct } =
   useListPartnerProducts()
 
 onMounted(async () => {

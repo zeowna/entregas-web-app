@@ -36,6 +36,18 @@ const reset = () => {
   v$.value.$reset()
 }
 
+const findByPartnerIdAndProductId = async (partnerId: number, productId: number) => {
+  try {
+    const found = await Api.partners.products.find(partnerId, {
+      conditions: { product: { eq: productId } }
+    })
+
+    return found.list.length ? found.list[0] : null
+  } catch (err) {
+    return null
+  }
+}
+
 const findByPartnerIdAndId = async (partnerId: number, id: number) => {
   try {
     isLoading.value = true
@@ -45,20 +57,21 @@ const findByPartnerIdAndId = async (partnerId: number, id: number) => {
       ...found,
       value: centsToValue(found.value)
     }
-
-    isLoading.value = false
   } catch (err) {
     if (err instanceof NotFoundError) {
       await router.push({ name: 'create-partner' })
     }
 
     throw err
+  } finally {
+    isLoading.value = false
   }
 }
 
 const createPartnerProduct = async () => {
   const payload = {
     ...partnerProduct.value,
+    name: partnerProduct.value.product!.name as string,
     value: partnerProduct.value.value * 1000
   }
 
@@ -71,8 +84,11 @@ const createPartnerProduct = async () => {
 }
 
 const updatePartnerProduct = async () => {
+  console.log(partnerProduct.value.product!.name)
+
   const payload = {
     ...partnerProduct.value,
+    name: partnerProduct.value.product!.name as string,
     value: partnerProduct.value.value * 100
   }
 
@@ -140,6 +156,7 @@ export const useSavePartnerProduct = (_partnerId: number, toast: ToastServiceMet
     partnerProduct,
     v$,
     findByPartnerIdAndId,
+    findByPartnerIdAndProductId,
     savePartnerProduct: savePartnerProduct(toast),
     reset
   }

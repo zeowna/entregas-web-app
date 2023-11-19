@@ -73,6 +73,7 @@
       </div>
     </div>
   </div>
+  <LoadingSpinner :isLoading="isLoading" />
 </template>
 
 <script setup lang="ts">
@@ -82,6 +83,7 @@ import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
 import { useRoute } from 'vue-router'
 import PictureUploader from '@/components/PictureUploader.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
 const toast = useToast()

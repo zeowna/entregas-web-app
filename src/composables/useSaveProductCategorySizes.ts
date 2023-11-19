@@ -1,6 +1,6 @@
 import { ToastServiceMethods } from 'primevue/toastservice'
 import { computed, ref } from 'vue'
-import { ProductCategorySize } from '@/services/api/types'
+import { FindEntitiesResponse, ProductCategorySize } from '@/services/api/types'
 import { helpers, required } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import { Api } from '@/services/api/Api'
@@ -10,13 +10,26 @@ const showCategoryForm = ref(false)
 const productCategorySize = ref<ProductCategorySize>({
   name: ''
 })
-const data = ref<ProductCategorySize[]>([])
+const data = ref<FindEntitiesResponse<ProductCategorySize>>({
+  list: [],
+  count: 0,
+  skip: 0,
+  limit: 0,
+  pages: 0
+})
+
 const productCategoryId = ref<number | null>()
 
 const reset = () => {
   isLoading.value = false
   productCategoryId.value = null
-  data.value = []
+  data.value = {
+    list: [],
+    count: 0,
+    skip: 0,
+    limit: 0,
+    pages: 0
+  }
 }
 
 const rulesProductCategory = computed(() => ({
@@ -29,7 +42,9 @@ const findProductCategorySizes = async (id: number) => {
   productCategoryId.value = id
 
   isLoading.value = true
-  data.value = await Api.products.categories.sizes.findByCategoryId(productCategoryId.value)
+  data.value = await Api.products.categories.sizes.find(productCategoryId.value, {
+    sort: { name: 1 }
+  })
   isLoading.value = false
 }
 

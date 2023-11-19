@@ -1,9 +1,12 @@
 import { ActionContext, ActionTree } from 'vuex'
 import { Api } from '@/services/api/Api'
-import { AppState } from '@/store/index'
+import { AppState, store } from '@/store/index'
 import { AdminUser, User } from '@/services/api/types'
 import { PartnerUser } from '@/services/api/types/PartnerUser'
 import { Mutations, MutationTypes } from '@/store/mutations'
+import { jwtDecode } from 'jwt-decode'
+import { DateTime } from 'luxon'
+import { computed } from 'vue'
 
 export enum ActionTypes {
   SIGN_IN = 'signIn',
@@ -45,29 +48,40 @@ export const actions: Actions & ActionTree<AppState, AppState> = {
     localStorage.setItem('token', authorization_token)
 
     dispatch(ActionTypes.SET_USER, user)
-    dispatch(ActionTypes.SET_TOKEN, user)
+    dispatch(ActionTypes.SET_TOKEN, authorization_token)
 
     return user
   },
 
   async [ActionTypes.REFRESH_TOKEN]({ dispatch }) {
     const token = localStorage.getItem('token')
-
-    if (!token) {
-      return
-    }
-
     dispatch(ActionTypes.SET_TOKEN, token)
 
+    const user = computed(() => store.getters.getUser)
+
     try {
-      const { user, authorization_token } = await Api.auth.refreshToken(token as string)
+      if (!token) {
+        return
+      }
 
-      localStorage.setItem('token', authorization_token)
+      const decoded = jwtDecode(token)
+      const toExpire = DateTime.fromMillis(decoded.exp! * 1000)
+      const now = DateTime.now()
 
-      dispatch(ActionTypes.SET_USER, user)
-      dispatch(ActionTypes.SET_TOKEN, token)
+      const diff = toExpire.diff(now, 'minutes').toObject()
 
-      return user
+      if (diff.minutes! <= 30 || !user.value) {
+        const { user, authorization_token } = await Api.auth.refreshToken(token as string)
+
+        localStorage.setItem('token', authorization_token)
+
+        dispatch(ActionTypes.SET_USER, user)
+        dispatch(ActionTypes.SET_TOKEN, authorization_token)
+
+        return user
+      }
+
+      return
     } catch (err) {
       localStorage.setItem('token', '')
       dispatch(ActionTypes.SET_USER, null)
