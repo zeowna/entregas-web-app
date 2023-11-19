@@ -64,6 +64,7 @@ export const useListProductCategories = () => {
 
   return {
     data,
+    params,
     categoryName,
     isLoading,
     findProductCategories,

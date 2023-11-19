@@ -214,7 +214,11 @@ const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 
-const { data: productCategories, findProductCategories } = useListProductCategories()
+const {
+  data: productCategories,
+  params: categoryParams,
+  findProductCategories
+} = useListProductCategories()
 const {
   data: sizes,
   findProductCategorySizes,
@@ -318,7 +322,9 @@ onMounted(async () => {
     return
   }
 
-  await findProductCategories({ limit: 9999 })
+  categoryParams.value.skip = 0
+  categoryParams.value.limit = 9999
+  await findProductCategories()
 })
 
 watch(

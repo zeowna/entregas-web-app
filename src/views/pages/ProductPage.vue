@@ -110,7 +110,11 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 const route = useRoute()
 const toast = useToast()
 
-const { data: productCategories, findProductCategories } = useListProductCategories()
+const {
+  data: productCategories,
+  params: categoryParams,
+  findProductCategories
+} = useListProductCategories()
 const {
   data: sizes,
   findProductCategorySizes,
@@ -126,7 +130,9 @@ onMounted(async () => {
   reset()
   resetSizes()
 
-  await findProductCategories({ skip: 0, limit: 999 })
+  categoryParams.value.skip = 0
+  categoryParams.value.limit = 999
+  await findProductCategories()
 
   if (route.params?.id) {
     await findProductById(+route.params?.id)
