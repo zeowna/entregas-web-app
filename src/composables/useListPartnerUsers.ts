@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { FindEntitiesPaging, FindEntitiesResponse, ProductCategory } from '@/services/api/types'
 import { Api } from '@/services/api/Api'
-import { DataTablePageEvent } from 'primevue/datatable'
+import { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 
@@ -37,13 +37,20 @@ export const useListPartnerUsers = () => {
       name: { contains: (userName.value || '').trim() }
     }
 
-    await findPartnerUsers(partnerId.value as number)
+    await findPartnerUsers(partnerId.value!)
+  }
+
+  const onSort = async (e: DataTableSortEvent) => {
+    params.value.sort = {
+      [e.sortField as string]: e.sortOrder
+    }
+    await findPartnerUsers(partnerId.value!)
   }
 
   const onPage = async (e: DataTablePageEvent) => {
     params.value.skip = data.value.limit * e.page
 
-    await findPartnerUsers(partnerId.value as number)
+    await findPartnerUsers(partnerId.value!)
   }
 
   const goToPartnerUser = async (partnerId: number, id?: number) => {
@@ -69,6 +76,7 @@ export const useListPartnerUsers = () => {
     isLoading,
     findPartnerUsers,
     onSearch,
+    onSort,
     onPage,
     goToPartnerUser
   }

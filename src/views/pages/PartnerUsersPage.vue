@@ -11,6 +11,9 @@
           :totalRecords="data.count"
           :loading="isLoading"
           @page="onPage($event)"
+          @sort="onSort"
+          sortField="updatedAt"
+          :sortOrder="-1"
         >
           <template #header>
             <div class="flex flex-wrap align-items-center justify-content-start">
@@ -44,8 +47,8 @@
               />
             </template>
           </Column>
-          <Column field="name" header="Nome"></Column>
-          <Column field="updatedAt" header="Data Edição">
+          <Column field="name" header="Nome" sortable></Column>
+          <Column field="updatedAt" header="Data Edição" sortable>
             <template #body="slotProps">
               {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -
               {{ new Date(slotProps.data.updatedAt).toLocaleTimeString() }}
@@ -81,7 +84,7 @@ const router = useRouter()
 const route = useRoute()
 const user = computed(() => store.getters.getUser)
 
-const { isLoading, userName, data, onSearch, onPage, findPartnerUsers, goToPartnerUser } =
+const { isLoading, userName, data, onSort, onSearch, onPage, findPartnerUsers, goToPartnerUser } =
   useListPartnerUsers()
 
 const goToPartner = async (partnerId: number) => {
