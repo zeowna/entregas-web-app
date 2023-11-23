@@ -7,7 +7,8 @@ import { store } from '@/store'
 export abstract class AbstractResource<T extends Entity> {
   protected abstract url: string
 
-  constructor(protected client: ComputedRef<AxiosInstance>) {}
+  constructor(protected client: ComputedRef<AxiosInstance>) {
+  }
 
   async get<R = T>(uri: string, params: any = {}, headers = {}) {
     try {
@@ -46,6 +47,18 @@ export abstract class AbstractResource<T extends Entity> {
     }
   }
 
+  async delete<R = T>(uri: string, headers = {}) {
+    try {
+      const { data } = await this.client.value.delete<R>(uri, {
+        headers: { ...this.buildAuthorizationHeaders(), ...headers }
+      })
+
+      return data
+    } catch (err) {
+      throw this.handleError(err)
+    }
+  }
+
   async postMultipart<R = T>(uri: string, file: File, headers = {}) {
     const { data } = await this.client.value.postForm<R>(
       uri,
@@ -69,8 +82,9 @@ export abstract class AbstractResource<T extends Entity> {
 
     return token.value
       ? {
-          Authorization: `Bearer ${token.value}`
-        }
+        lang: 'pt-BR',
+        Authorization: `Bearer ${token.value}`
+      }
       : {}
   }
 
@@ -90,4 +104,6 @@ export abstract class AbstractResource<T extends Entity> {
 
     return err
   }
+
+
 }

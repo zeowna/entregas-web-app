@@ -62,7 +62,7 @@
         </div>
 
         <div class="grid" v-if="!isLoadingProducts">
-          <div class="col-12 sm:col-12 md:col-3" v-for="product in data.list" :key="product.id">
+          <div class="col-12 col-12 md:col-3" v-for="product in data.list" :key="product.id">
             <div class="p-4 border-1 surface-border surface-card border-round">
               <div class="flex flex-wrap align-items-center justify-content-between gap-2">
                 <div class="flex align-items-center gap-2">
@@ -94,7 +94,7 @@
         <h5>Cadastro de Produto</h5>
         <form @submit.prevent="savePartnerProduct">
           <div class="grid">
-            <div class="md:col-3 sm:col-12">
+            <div class="md:col-3 col-12">
               <Fieldset legend="Foto">
                 <img
                   v-if="product?.pictureURI"
@@ -103,10 +103,10 @@
                 />
               </Fieldset>
             </div>
-            <div class="md:col-9 sm:col-12">
+            <div class="md:col-9 col-12">
               <Fieldset legend="Dados do Produto">
                 <div class="grid">
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field md:col-6 col-12">
                     <label for="name">Nome</label>
                     <InputText
                       type="text"
@@ -116,7 +116,7 @@
                       placeholder="Nome do Produto"
                     />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field md:col-6 col-12">
                     <label for="category">Tamanho</label>
                     <InputText
                       type="text"
@@ -126,7 +126,7 @@
                       placeholder="Tamnho do Produto"
                     />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field md:col-6 col-12">
                     <label for="size">Valor</label>
                     <InputNumber
                       v-model="v$.value.$model"
@@ -140,7 +140,7 @@
                     />
                     <FieldError :errors="v$.$errors" />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field md:col-6 col-12">
                     <label for="status">Quantidade em estoque</label>
                     <InputNumber
                       v-model="v$.inStockQuantity.$model"

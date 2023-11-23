@@ -1,24 +1,37 @@
-import { Customer } from './Customer'
+import { CustomerUser } from './CustomerUser'
 import { Entity } from './Entity'
 import { CartProduct } from './CartProduct'
 import { Partner } from './Partner'
 import { Address } from './Address'
 
-export enum OrderStatuses {
+export enum OrderStatus {
   Created = 'created',
-  Canceled = 'canceled',
+  CanceledByPartner = 'canceled_by_partner',
+  CanceledByCustomer = 'canceled_by_customer',
+  AcceptedByPartner = 'accepted_by_Partner',
+  RefusedByPartner = 'refused_by_Partner',
   AwaitingExecution = 'awaiting_execution',
   InDelivery = 'in_delivery',
   Settled = 'Settled'
 }
 
+export enum OrderPaymentMethods {
+  DebitCardLocation = 'debit_card_location',
+  CreditCardLocation = 'credit_card_location',
+  CashLocation = 'cash_location',
+  CardRemote = 'card_remote'
+}
+
 export interface Order extends Entity {
-  customer?: Customer
-  partner: Partner
-  cart: CartProduct[]
-  address: Address
-  totalValue: number
-  status: OrderStatuses
-  statusUpdatedAt: Date
+  partnerId: number
+  customer?: CustomerUser
+  partner?: Partner
+  cart?: CartProduct[]
+  address?: Address
+  totalValue?: number
+  status?: OrderStatus
+  statusUpdatedAt?: Date
+  paymentMethod: OrderPaymentMethods
+  changeValue?: number
   externalServiceId?: string
 }

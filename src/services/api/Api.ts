@@ -2,7 +2,6 @@ import { computed } from 'vue'
 import axios from 'axios'
 import { AuthResource } from './AuthResource'
 import { PartnersResource } from './PartnersResource'
-import { OrdersResource } from './OrdersResource'
 import { CustomersResource } from './CustomersResource'
 import { store } from '@/store'
 import { ProductsResource } from '@/services/api/ProductsResource'
@@ -17,7 +16,6 @@ export class Api {
   static me = new MeResource(Api.client)
   static addresses = new AddressesResource(Api.client)
   static partners = new PartnersResource(Api.client)
-  static orders = new OrdersResource(Api.client)
   static customers = new CustomersResource(Api.client)
   static products = new ProductsResource(Api.client)
   static admin = new AdminResource(Api.client)

@@ -136,14 +136,14 @@ const router = createRouter({
         },
 
         {
-          path: '/orders',
-          name: 'orders',
+          path: 'partners/:partnerId/orders',
+          name: 'list-partner-orders',
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/OrdersPage.vue')
         },
         {
-          path: '/order',
-          name: 'order',
+          path: 'partners/:partnerId/order/:id',
+          name: 'partner-order-details',
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/OrderPage.vue')
         },

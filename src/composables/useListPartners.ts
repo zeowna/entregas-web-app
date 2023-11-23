@@ -5,8 +5,6 @@ import { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import router from '@/router'
 
 export const useListPartners = () => {
-  const limit = 25
-
   const data = ref<FindEntitiesResponse<Partner>>({
     list: [],
     count: 0,

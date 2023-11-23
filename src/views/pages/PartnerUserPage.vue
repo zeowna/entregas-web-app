@@ -5,7 +5,7 @@
         <h5>Cadastro de Usuário Parceiro</h5>
         <form @submit.prevent="savePartnerUser">
           <div class="grid">
-            <div class="md:col-3 sm:col-12">
+            <div class="md:col-3 col-12">
               <Fieldset legend="Foto">
                 <PictureUploader
                   :pictureUri="partnerUser.profilePictureURI"
@@ -13,10 +13,10 @@
                 />
               </Fieldset>
             </div>
-            <div class="md:col-9 sm:col-12">
+            <div class="md:col-9 col-12">
               <Fieldset legend="Dados do Usuário">
                 <div class="grid">
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field md:col-6 col-12">
                     <label for="name">Nome</label>
                     <InputText
                       type="text"
@@ -26,7 +26,7 @@
                     />
                     <FieldError :errors="v$.name.$errors" />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field md:col-6 col-12">
                     <label for="category">Data de nascimento</label>
                     <Calendar
                       v-model="v$.birthday.$model"
@@ -36,7 +36,7 @@
                     />
                     <FieldError :errors="v$.birthday.$errors" />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field md:col-6 col-12">
                     <label for="size">CPF</label>
                     <InputMask
                       type="text"
@@ -48,7 +48,7 @@
                     />
                     <FieldError :errors="v$.cpf.$errors" />
                   </div>
-                  <div class="field md:col-6 sm:col-12">
+                  <div class="field md:col-6 col-12">
                     <label for="status">E-mail</label>
                     <InputText
                       type="text"

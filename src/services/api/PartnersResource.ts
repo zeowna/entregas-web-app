@@ -4,6 +4,7 @@ import { PartnerProductsResource } from '@/services/api/PartnerProductsResource'
 import { PartnerUsersResource } from '@/services/api/PartnerUsersResource'
 import { PartnerAddressesResource } from '@/services/api/PartnerAddressesResource'
 import { FindEntitiesPaging, FindEntitiesResponse } from '@/services/api/types'
+import { PartnerOrdersResource } from '@/services/api/PartnerOrdersResource'
 
 export class PartnersResource extends AbstractResource<Partner> {
   protected url = '/partners'
@@ -11,6 +12,7 @@ export class PartnersResource extends AbstractResource<Partner> {
   readonly products = new PartnerProductsResource(this.client)
   readonly users = new PartnerUsersResource(this.client)
   readonly addresses = new PartnerAddressesResource(this.client)
+  readonly orders = new PartnerOrdersResource(this.client)
 
   async find({
     conditions = {},

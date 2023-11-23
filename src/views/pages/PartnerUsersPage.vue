@@ -30,7 +30,7 @@
                 />
                 <Button label="Criar Usuário" @click="goToPartnerUser(+route.params.partnerId)" />
               </div>
-              <div class="flexjustify-content-end">
+              <div class="flex justify-content-end">
                 <span class="p-input-icon-left">
                   <i class="pi pi-search" />
                   <InputText v-model="userName" placeholder="Nome do Usuário" @blur="onSearch" />

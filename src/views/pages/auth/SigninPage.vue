@@ -1,42 +1,3 @@
-<script setup lang="ts">
-import { useLayout } from '@/layout/composables/layout'
-import { onMounted } from 'vue'
-import AppLogo from '@/layout/AppLogo.vue'
-import { useSignIn } from '@/composables'
-import FieldError from '@/components/FieldError.vue'
-
-const { layoutConfig, changeThemeSettings } = useLayout()
-
-const { signIn, forgotPassword, disableSubmitButton, v$ } = useSignIn()
-
-const onChangeTheme = (theme: string, mode: string) => {
-  const elementId = 'theme-css'
-  const linkElement = document.getElementById(elementId)
-
-  if (linkElement) {
-    const cloneLinkElement = linkElement.cloneNode(true) as Element
-    const newThemeUrl = linkElement.getAttribute('href')!.replace(layoutConfig.theme.value, theme)
-    cloneLinkElement!.setAttribute('id', elementId + '-clone')
-    cloneLinkElement!.setAttribute('href', newThemeUrl)
-    cloneLinkElement!.addEventListener('load', () => {
-      linkElement!.remove()
-      cloneLinkElement!.setAttribute('id', elementId)
-      changeThemeSettings(theme, mode === 'dark')
-    })
-    linkElement.parentNode!.insertBefore(cloneLinkElement, linkElement!.nextSibling)
-  }
-}
-
-onMounted(() => {
-  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  if (isDark) {
-    onChangeTheme('md-dark-indigo', 'dark')
-  } else {
-    onChangeTheme('md-light-indigo', 'light')
-  }
-})
-</script>
-
 <template>
   <div
     class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden"
@@ -44,7 +5,7 @@ onMounted(() => {
     <form @submit.prevent="signIn">
       <div class="flex flex-column align-items-center justify-content-center">
         <div>
-          <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
+          <div class="w-full surface-card py-8 px-5 px-8" style="border-radius: 53px">
             <div class="text-center mb-5">
               <div class="text-900 text-3xl font-medium mb-3">
                 <AppLogo />
@@ -104,6 +65,45 @@ onMounted(() => {
   </div>
   <Toast position="top-center" />
 </template>
+
+<script setup lang="ts">
+import { useLayout } from '@/layout/composables/layout'
+import { onMounted } from 'vue'
+import AppLogo from '@/layout/AppLogo.vue'
+import { useSignIn } from '@/composables'
+import FieldError from '@/components/FieldError.vue'
+
+const { layoutConfig, changeThemeSettings } = useLayout()
+
+const { signIn, forgotPassword, disableSubmitButton, v$ } = useSignIn()
+
+const onChangeTheme = (theme: string, mode: string) => {
+  const elementId = 'theme-css'
+  const linkElement = document.getElementById(elementId)
+
+  if (linkElement) {
+    const cloneLinkElement = linkElement.cloneNode(true) as Element
+    const newThemeUrl = linkElement.getAttribute('href')!.replace(layoutConfig.theme.value, theme)
+    cloneLinkElement!.setAttribute('id', elementId + '-clone')
+    cloneLinkElement!.setAttribute('href', newThemeUrl)
+    cloneLinkElement!.addEventListener('load', () => {
+      linkElement!.remove()
+      cloneLinkElement!.setAttribute('id', elementId)
+      changeThemeSettings(theme, mode === 'dark')
+    })
+    linkElement.parentNode!.insertBefore(cloneLinkElement, linkElement!.nextSibling)
+  }
+}
+
+onMounted(() => {
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  if (isDark) {
+    onChangeTheme('md-dark-indigo', 'dark')
+  } else {
+    onChangeTheme('md-light-indigo', 'light')
+  }
+})
+</script>
 
 <style scoped>
 small {

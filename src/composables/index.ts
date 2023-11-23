@@ -1,5 +1,7 @@
+export * from '@/composables/useOrder'
 export * from '@/composables/useFindAddress'
 export * from '@/composables/useListAdminUsers'
+export * from '@/composables/useListPartnerOrders'
 export * from '@/composables/useListPartnerProducts'
 export * from '@/composables/useListPartners'
 export * from '@/composables/useListProductCategories'
