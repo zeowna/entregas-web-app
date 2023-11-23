@@ -9,7 +9,9 @@
     "build-only": "vite build",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "deploy": "yarn build --mode=production && gcloud storage rsync ./dist gs://entregas-web-app --recursive"
+    "gcp:config": "gsutil setmeta -h \"Cache-Control: public, max-age=0\" gs://entregas-web-app/*.html",
+    "gcp:deploy": "gcloud storage rsync ./dist gs://entregas-web-app --recursive",
+    "deploy": "yarn build --mode=production && yarn gcp:deploy && yarn gcp:config"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.2",

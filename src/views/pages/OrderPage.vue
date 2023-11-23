@@ -4,36 +4,29 @@
       <div class="card p-fluid">
         <div class="grid">
           <div class="col-12 md:col-6">
-            <Fieldset legend="Detalhes do Pedido">
-              <h1>Pedido #{{ formatOrderNumber(order?.id!) }}</h1>
+            <h1>Pedido #{{ formatOrderNumber(order?.id!) }}</h1>
+            <Tag
+              :value="formatOrderStatus(order?.status!)"
+              :severity="getOrderStatusColorWeb(order?.status!)"
+            />
 
-              <Tag
-                :value="formatOrderStatus(order?.status!)"
-                :severity="getOrderStatusColorWeb(order?.status!)"
-              />
-              <br />
-              <br />
+            <h2>Listagem de produtos</h2>
+            <p v-for="cartProduct in order?.cart" :key="cartProduct.id">
+              {{ cartProduct.quantity }}x {{ cartProduct.partnerProduct?.product?.name }}
+              {{ cartProduct.partnerProduct?.product?.size }} <br />
+              <b>{{ centsToCurrency(cartProduct.totalValue / cartProduct.quantity) }}</b>
+            </p>
 
-              <h2>Listagem de produtos</h2>
-              <p v-for="cartProduct in order?.cart" :key="cartProduct.id">
-                {{ cartProduct.quantity }}x {{ cartProduct.partnerProduct?.product?.name }}
-                {{ cartProduct.partnerProduct?.product?.size }} <br />
-                <b>{{ centsToCurrency(cartProduct.totalValue / cartProduct.quantity) }}</b>
-              </p>
-
-              <h4>{{ formatOrderPaymentMethod(order?.paymentMethod!) }}</h4>
-              <p>{{ centsToCurrency(order?.totalValue!) }}</p>
-              <h4 v-if="order?.paymentMethod === OrderPaymentMethods.CashLocation">Troco para</h4>
-              <p v-if="order?.paymentMethod === OrderPaymentMethods.CashLocation">
-                {{ centsToCurrency(order?.changeValue!) }}
-              </p>
-            </Fieldset>
+            <h4>{{ formatOrderPaymentMethod(order?.paymentMethod!) }}</h4>
+            <p>{{ centsToCurrency(order?.totalValue!) }}</p>
+            <h4 v-if="order?.paymentMethod === OrderPaymentMethods.CashLocation">Troco para</h4>
+            <p v-if="order?.paymentMethod === OrderPaymentMethods.CashLocation">
+              {{ centsToCurrency(order?.changeValue!) }}
+            </p>
           </div>
           <div class="col-12 md:col-6">
-            <Fieldset legend="Endereço para entrega">
-              <h4>{{ formatAddress(order?.address!) }}</h4>
-              <MapContainer :address="order?.address" v-if="order?.address" />
-            </Fieldset>
+            <h4>{{ formatAddress(order?.address!) }}</h4>
+            <MapContainer :address="order?.address" v-if="order?.address" />
           </div>
         </div>
 
