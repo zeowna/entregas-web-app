@@ -12,7 +12,7 @@ export enum OrderStatus {
   RefusedByPartner = 'refused_by_Partner',
   AwaitingExecution = 'awaiting_execution',
   InDelivery = 'in_delivery',
-  Settled = 'Settled'
+  Settled = 'settled'
 }
 
 export enum OrderPaymentMethods {

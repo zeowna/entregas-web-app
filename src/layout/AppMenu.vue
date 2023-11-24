@@ -56,11 +56,6 @@ const partnerMenu = [
         label: 'Listar Pedidos',
         icon: 'pi pi-shopping-cart',
         to: `/partners/${(user.value as PartnerUser).partner?.id}/orders`
-      },
-      {
-        label: 'Listar Pedidos (Tempo Real)',
-        icon: 'pi pi-shopping-cart',
-        to: `/partners/${(user.value as PartnerUser).partner?.id}/orders`
       }
     ]
   }

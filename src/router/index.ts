@@ -134,7 +134,6 @@ const router = createRouter({
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/PartnerProductPage.vue')
         },
-
         {
           path: 'partners/:partnerId/orders',
           name: 'list-partner-orders',
@@ -144,12 +143,6 @@ const router = createRouter({
         {
           path: 'partners/:partnerId/order/:id',
           name: 'partner-order-details',
-          meta: { requiresAuth: true },
-          component: () => import('@/views/pages/OrderPage.vue')
-        },
-        {
-          path: '/users',
-          name: 'users',
           meta: { requiresAuth: true },
           component: () => import('@/views/pages/OrderPage.vue')
         }
@@ -198,7 +191,7 @@ router.beforeEach(async (to, from, next) => {
     next()
   } catch (err) {
     console.error(err)
-    next({ name: 'signIn' })
+    next({ name: 'notfound' })
   }
 })
 
