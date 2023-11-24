@@ -90,11 +90,13 @@ import {
   formatOrderStatus,
   getOrderStatusColorWeb
 } from '@/utils'
-import { onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { OrderPaymentMethods, OrderStatus } from '@/services/api/types'
 import MapContainer from '@/components/MapContainer.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { socket } from '@/services/socket/Socket'
+import { store } from '@/store'
 
 const route = useRoute()
 const {
@@ -109,14 +111,27 @@ const {
   cancelOrder
 } = useOrder()
 
+const user = computed(() => store.getters.getUser)
+
 onMounted(async () => {
   reset()
+
+  socket.connect()
+
+  socket.on(`partner-order-updated-${user.value.partner.id}`, (updated) => {
+    if (updated.id === order.value.id) {
+      isLoading.value = true
+      order.value = updated
+      isLoading.value = false
+    }
+  })
 
   await findOrder(+route.params.partnerId, +route.params.id)
 })
 
 onUnmounted(() => {
   reset()
+  socket.disconnect()
 })
 </script>
 
