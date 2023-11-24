@@ -131,7 +131,6 @@ onMounted(async () => {
 
 onUnmounted(() => {
   reset()
-  socket.disconnect()
 })
 </script>
 
