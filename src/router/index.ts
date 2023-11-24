@@ -191,7 +191,7 @@ router.beforeEach(async (to, from, next) => {
     next()
   } catch (err) {
     console.error(err)
-    next({ name: 'signIn' })
+    next({ name: 'notfound' })
   }
 })
 
