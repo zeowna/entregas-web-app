@@ -49,7 +49,7 @@
               </span>
             </div>
           </template>
-          <Column field="id" header="Número" sortable>
+          <Column field="id" header="Número" :sortable="!realTimeEnabled">
             <template #body="slotProps"> #{{ formatOrderNumber(slotProps.data.id) }}</template>
           </Column>
           <Column field="address" header="Endereço">
@@ -57,7 +57,7 @@
               {{ formatAddressSmall(slotProps.data.address) }}
             </template>
           </Column>
-          <Column field="status" header="Status" sortable>
+          <Column field="status" header="Status" :sortable="!realTimeEnabled">
             <template #body="slotProps">
               <Tag
                 :value="formatOrderStatus(slotProps.data.status)"
@@ -65,18 +65,22 @@
               />
             </template>
           </Column>
-          <Column field="totalValue" header="Valor Total" sortable>
+          <Column field="totalValue" header="Valor Total" :sortable="!realTimeEnabled">
             <template #body="slotProps">
               {{ centsToCurrency(slotProps.data.totalValue) }}
             </template>
           </Column>
-          <Column field="statusUpdatedAt" header="Atualização de Status" sortable>
+          <Column
+            field="statusUpdatedAt"
+            header="Atualização de Status"
+            :sortable="!realTimeEnabled"
+          >
             <template #body="slotProps">
               {{ new Date(slotProps.data.statusUpdatedAt).toLocaleDateString() }} -
               {{ new Date(slotProps.data.statusUpdatedAt).toLocaleTimeString() }}
             </template>
           </Column>
-          <Column field="updatedAt" header="Data Edição" sortable>
+          <Column field="updatedAt" header="Data Edição" :sortable="!realTimeEnabled">
             <template #body="slotProps">
               {{ new Date(slotProps.data.updatedAt).toLocaleDateString() }} -
               {{ new Date(slotProps.data.updatedAt).toLocaleTimeString() }}
@@ -99,7 +103,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useListPartnerOrders } from '@/composables'
 import { useRoute, useRouter } from 'vue-router'
 import { PrimeIcons } from 'primevue/api'
@@ -112,7 +116,7 @@ import {
 } from '@/utils'
 import { store } from '@/store'
 import { PartnerUser } from '@/services/api/types'
-import { DateTime } from 'luxon'
+import { socket } from '@/services/socket/Socket'
 
 const route = useRoute()
 const router = useRouter()
@@ -126,24 +130,31 @@ const realTimeEnabled = ref(false)
 const enableRealtime = async () => {
   realTimeEnabled.value = true
 
-  params.value.conditions = {
-    createdAt: {
-      gte: DateTime.now().startOf('day').toJSDate(),
-      lte: DateTime.now().endOf('day').toJSDate()
+  socket.connect()
+
+  socket.on(`partner-order-updated-${user.value.partner.id}`, (order) => {
+    const found = data.value.list.findIndex(({ id }) => id === order.id)
+
+    if (found > -1) {
+      data.value.list.splice(found, 1)
     }
-  }
 
-  params.value.limit = 50
-
-  realTimeEnabled.value = true
-
-  while (realTimeEnabled.value) {
-    await new Promise((res) => setTimeout(() => res(findOrders(+route.params.partnerId)), 60000))
-  }
+    data.value.list.unshift(order)
+  })
 }
 
-const disableRealTime = () => {
+const disableRealTime = async () => {
+  params.value = {
+    conditions: {},
+    skip: 0,
+    limit: 25,
+    sort: { statusUpdatedAt: -1 }
+  }
+
   realTimeEnabled.value = false
+
+  await findOrders(+route.params.partnerId)
+  socket.disconnect()
 }
 
 onMounted(async () => {
@@ -159,6 +170,10 @@ onMounted(async () => {
   }
 
   await findOrders(+route.params.partnerId)
+})
+
+onUnmounted(() => {
+  disableRealTime()
 })
 </script>
 

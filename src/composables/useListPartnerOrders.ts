@@ -11,7 +11,8 @@ export const useListPartnerOrders = () => {
   const params = ref<FindEntitiesPaging>({
     conditions: {},
     skip: 0,
-    limit: 25
+    limit: 25,
+    sort: { statusUpdatedAt: -1 }
   })
   const data = ref<FindEntitiesResponse<Order>>({
     list: [],
