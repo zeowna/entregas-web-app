@@ -39,10 +39,14 @@ export const useListPartnerOrders = () => {
   const onSearch = async () => {
     if (orderNumber.value.length) {
       params.value.conditions = {
+        ...params.value.conditions,
         id: { eq: Number.parseInt(orderNumber.value) }
       }
     } else {
-      params.value.conditions = {}
+      params.value.conditions = {
+        ...params.value.conditions,
+        id: undefined
+      }
     }
 
     await findOrders(partnerId.value as number)

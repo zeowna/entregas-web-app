@@ -16,8 +16,26 @@
           :sortOrder="-1"
         >
           <template #header>
-            <div class="flex flex-wrap align-items-center justify-content-start">
+            <div class="flex flex-wrap align-items-center justify-content-between">
               <h5>Listar Pedidos</h5>
+            </div>
+            <div class="flex justify-content-start">
+              <Button
+                v-if="!realTimeEnabled"
+                label="Ativar carregamento em tempo real"
+                @click="enableRealtime"
+                :icon="PrimeIcons.REPLAY"
+                icon-pos="right"
+              />
+
+              <Button
+                v-if="realTimeEnabled"
+                label="Parar carregamento em tempo real"
+                @click="disableRealTime"
+                :icon="PrimeIcons.STOP_CIRCLE"
+                icon-pos="right"
+                severity="danger"
+              />
             </div>
             <div class="flex justify-content-end">
               <span class="p-input-icon-left">
@@ -31,7 +49,7 @@
               </span>
             </div>
           </template>
-          <Column field="id" header="Número">
+          <Column field="id" header="Número" sortable>
             <template #body="slotProps"> #{{ formatOrderNumber(slotProps.data.id) }}</template>
           </Column>
           <Column field="address" header="Endereço">
@@ -39,7 +57,7 @@
               {{ formatAddressSmall(slotProps.data.address) }}
             </template>
           </Column>
-          <Column field="status" header="Status">
+          <Column field="status" header="Status" sortable>
             <template #body="slotProps">
               <Tag
                 :value="formatOrderStatus(slotProps.data.status)"
@@ -47,7 +65,7 @@
               />
             </template>
           </Column>
-          <Column field="totalValue" header="Valor Total">
+          <Column field="totalValue" header="Valor Total" sortable>
             <template #body="slotProps">
               {{ centsToCurrency(slotProps.data.totalValue) }}
             </template>
@@ -81,7 +99,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useListPartnerOrders } from '@/composables'
 import { useRoute, useRouter } from 'vue-router'
 import { PrimeIcons } from 'primevue/api'
@@ -91,16 +109,42 @@ import {
   formatOrderNumber,
   formatOrderStatus,
   getOrderStatusColorWeb
-} from '../../utils'
+} from '@/utils'
 import { store } from '@/store'
 import { PartnerUser } from '@/services/api/types'
+import { DateTime } from 'luxon'
 
 const route = useRoute()
 const router = useRouter()
 
-const { isLoading, orderNumber, data, onSearch, onSort, onPage, findOrders, goToOrder } =
+const { isLoading, params, orderNumber, data, onSearch, onSort, onPage, findOrders, goToOrder } =
   useListPartnerOrders()
 const user = computed(() => store.getters.getUser)
+
+const realTimeEnabled = ref(false)
+
+const enableRealtime = async () => {
+  realTimeEnabled.value = true
+
+  params.value.conditions = {
+    createdAt: {
+      gte: DateTime.now().startOf('day').toJSDate(),
+      lte: DateTime.now().endOf('day').toJSDate()
+    }
+  }
+
+  params.value.limit = 50
+
+  realTimeEnabled.value = true
+
+  while (realTimeEnabled.value) {
+    await new Promise((res) => setTimeout(() => res(findOrders(+route.params.partnerId)), 60000))
+  }
+}
+
+const disableRealTime = () => {
+  realTimeEnabled.value = false
+}
 
 onMounted(async () => {
   const partnerUser = user.value as PartnerUser

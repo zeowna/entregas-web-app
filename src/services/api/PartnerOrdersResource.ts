@@ -6,7 +6,7 @@ export class PartnerOrdersResource extends AbstractResource<Order> {
 
   async find(
     partnerId: number,
-    { conditions = {}, skip = 0, limit = 15, sort = { updatedAt: -1 } }: FindEntitiesPaging = {}
+    { conditions = {}, skip = 0, limit = 15, sort = { updatedAt: -1 } }: FindEntitiesPaging
   ) {
     return super.get<FindEntitiesResponse<Order>>(`${this.url}/${partnerId}/orders`, {
       conditions: JSON.stringify(conditions),
@@ -21,6 +21,6 @@ export class PartnerOrdersResource extends AbstractResource<Order> {
   }
 
   async updateStatus(partnerId: number, id: number, status: OrderStatus) {
-    return super.patch(`${this.url}/${partnerId}/orders/${id}`, { status })
+    return super.patch(`${this.url}/${partnerId}/orders/${id}/status`, { status })
   }
 }

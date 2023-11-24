@@ -59,7 +59,7 @@ const settleOrder = async (partnerId: number) => {
   order.value = await Api.partners.orders.updateStatus(
     partnerId,
     order.value?.id!,
-    OrderStatus.InDelivery
+    OrderStatus.Settled
   )
 
   isLoading.value = false

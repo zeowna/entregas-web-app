@@ -34,7 +34,7 @@
           <div class="col-6 md:col" v-if="order?.status === OrderStatus.Created">
             <Button
               label="Aceitar Pedido"
-              severity="info"
+              severity="warning"
               @click="acceptOrder(+route.params.partnerId)"
             />
           </div>
