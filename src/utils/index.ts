@@ -35,6 +35,7 @@ export const formatOrderNumber = (number: number) => `${number}`.padStart(4, '0'
 export const getOrderStatusColorWeb = (status: OrderStatus) => {
   switch (status) {
     case OrderStatus.Created:
+    case OrderStatus.AwaitingPartner:
       return 'info'
     case OrderStatus.CanceledByPartner:
     case OrderStatus.CanceledByCustomer:
@@ -57,6 +58,8 @@ export const formatOrderStatus = (status: OrderStatus) => {
   switch (status) {
     case OrderStatus.Created:
       return 'Criado'
+    case OrderStatus.AwaitingPartner:
+      return 'Aguardando aprovação'
     case OrderStatus.CanceledByPartner:
       return 'Cancelado pelo parceiro'
     case OrderStatus.CanceledByCustomer:

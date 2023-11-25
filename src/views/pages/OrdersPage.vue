@@ -19,34 +19,58 @@
             <div class="flex flex-wrap align-items-center justify-content-start">
               <h5>Listar Pedidos</h5>
             </div>
-            <div class="flex justify-content-start">
-              <Button
-                v-if="!realTimeEnabled"
-                label="Ativar carregamento em tempo real"
-                @click="enableRealtime"
-                :icon="PrimeIcons.REPLAY"
-                icon-pos="right"
-              />
-
-              <Button
-                v-if="realTimeEnabled"
-                label="Parar carregamento em tempo real"
-                @click="disableRealTime"
-                :icon="PrimeIcons.STOP_CIRCLE"
-                icon-pos="right"
-                severity="danger"
-              />
-            </div>
-            <div class="flex justify-content-end">
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText
-                  type="number"
-                  v-model="orderNumber"
-                  placeholder="Número do Pedido"
-                  @blur="onSearch"
+            <div class="grid">
+              <div class="col-12 md:col-7">
+                <Button
+                  v-if="!realTimeEnabled"
+                  label="Ativar carregamento em tempo real"
+                  @click="enableRealtime"
+                  :icon="PrimeIcons.REPLAY"
+                  icon-pos="right"
                 />
-              </span>
+
+                <Button
+                  v-if="realTimeEnabled"
+                  label="Parar carregamento em tempo real"
+                  @click="disableRealTime"
+                  :icon="PrimeIcons.STOP_CIRCLE"
+                  icon-pos="right"
+                  severity="danger"
+                />
+              </div>
+              <div class="col-12 md:col-5">
+                <form @submit.prevent="onSearch">
+                  <div class="grid">
+                    <div class="col-12 md:col-4">
+                      <Calendar
+                        v-model="filter.startDate"
+                        dateFormat="dd/mm/yy"
+                        :maxDate="new Date()"
+                        placeholder="Data inicial"
+                        showButtonBar
+                      />
+                    </div>
+                    <div class="col-12 md:col-4">
+                      <Calendar
+                        v-model="filter.finalDate"
+                        dateFormat="dd/mm/yy"
+                        :maxDate="new Date()"
+                        placeholder="Data final"
+                        showButtonBar
+                      />
+                    </div>
+                    <div class="col-12 md:col-4">
+                      <InputText
+                        type="number"
+                        v-model="filter.orderNumber"
+                        placeholder="Número do Pedido"
+                      />
+                    </div>
+
+                    <Button type="submit" v-show="false"></Button>
+                  </div>
+                </form>
+              </div>
             </div>
           </template>
           <Column field="id" header="Número" :sortable="!realTimeEnabled">
@@ -117,11 +141,12 @@ import {
 import { store } from '@/store'
 import { PartnerUser } from '@/services/api/types'
 import { socket } from '@/services/socket/Socket'
+import { DateTime } from 'luxon'
 
 const route = useRoute()
 const router = useRouter()
 
-const { isLoading, params, orderNumber, data, onSearch, onSort, onPage, findOrders, goToOrder } =
+const { isLoading, params, filter, data, onSearch, onSort, onPage, findOrders, goToOrder } =
   useListPartnerOrders()
 const user = computed(() => store.getters.getUser)
 
@@ -129,41 +154,41 @@ const realTimeEnabled = ref(false)
 
 const enableRealtime = async () => {
   realTimeEnabled.value = true
+  params.value.skip = 0
+  params.value.limit = 1000
+  params.value.sort = { statusUpdatedAt: -1 }
 
-  params.value = {
-    conditions: {},
-    skip: 0,
-    limit: 1000,
-    sort: { statusUpdatedAt: -1 }
-  }
+  filter.value.startDate = DateTime.now().startOf('day').toJSDate()
+  filter.value.finalDate = DateTime.now().endOf('day').toJSDate()
+  filter.value.orderNumber = null
 
-  await findOrders(+route.params.partnerId)
+  await onSearch()
 
-  socket.connect()
-
-  socket.on(`partner-order-updated-${user.value.partner.id}`, (order) => {
-    const found = data.value.list.findIndex(({ id }) => id === order.id)
+  socket.on(`partner-order-updated-${user.value.partner.id}`, (updated) => {
+    const found = data.value.list.findIndex(({ id }) => id === updated.id)
 
     if (found > -1) {
       data.value.list.splice(found, 1)
     }
 
-    data.value.list.unshift(order)
+    data.value.list.unshift(updated)
   })
 }
 
 const disableRealTime = async () => {
-  params.value = {
-    conditions: {},
-    skip: 0,
-    limit: 25,
-    sort: { statusUpdatedAt: -1 }
-  }
+  filter.value.startDate = null
+  filter.value.finalDate = null
+  filter.value.orderNumber = null
+
+  params.value.skip = 0
+  params.value.limit = 25
+  params.value.sort = { statusUpdatedAt: -1 }
 
   realTimeEnabled.value = false
 
   await findOrders(+route.params.partnerId)
-  socket.disconnect()
+
+  socket.on(`partner-order-updated-${user.value.partner.id}`, () => {})
 }
 
 onMounted(async () => {

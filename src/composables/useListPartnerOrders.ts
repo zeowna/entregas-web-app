@@ -1,8 +1,9 @@
 import { computed, ref } from 'vue'
-import { FindEntitiesPaging, FindEntitiesResponse, Order } from '@/services/api/types'
+import { FindEntitiesPaging, FindEntitiesResponse, Order, OrderStatus } from '@/services/api/types'
 import { Api } from '@/services/api/Api'
 import { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import { useRoute, useRouter } from 'vue-router'
+import { DateTime } from 'luxon'
 
 export const useListPartnerOrders = () => {
   const router = useRouter()
@@ -10,7 +11,20 @@ export const useListPartnerOrders = () => {
 
   const partnerId = computed(() => (route.params.partnerId ? +route.params.partnerId : null))
   const params = ref<FindEntitiesPaging>({
-    conditions: {},
+    conditions: {
+      status: {
+        in: [
+          OrderStatus.AwaitingPartner,
+          OrderStatus.CanceledByPartner,
+          OrderStatus.CanceledByCustomer,
+          OrderStatus.AcceptedByPartner,
+          OrderStatus.RefusedByPartner,
+          OrderStatus.AwaitingExecution,
+          OrderStatus.InDelivery,
+          OrderStatus.Settled
+        ]
+      }
+    },
     skip: 0,
     limit: 25,
     sort: { statusUpdatedAt: -1 }
@@ -22,7 +36,16 @@ export const useListPartnerOrders = () => {
     limit: 0,
     pages: 0
   })
-  const orderNumber = ref<string>('')
+  const filter = ref<{
+    orderNumber: string | null
+    startDate: Date | null
+    finalDate: Date | null
+  }>({
+    orderNumber: null,
+    startDate: null,
+    finalDate: null
+  })
+
   const isLoading = ref(false)
 
   const findOrders = async (partnerId: number) => {
@@ -39,15 +62,48 @@ export const useListPartnerOrders = () => {
   }
 
   const onSearch = async () => {
-    if (orderNumber.value.length) {
+    if (filter.value.orderNumber?.length) {
       params.value.conditions = {
         ...params.value.conditions,
-        id: { eq: Number.parseInt(orderNumber.value) }
+        id: { eq: Number.parseInt(filter.value.orderNumber) }
       }
     } else {
       params.value.conditions = {
         ...params.value.conditions,
         id: undefined
+      }
+    }
+
+    if (filter.value.startDate) {
+      params.value.conditions = {
+        ...params.value.conditions,
+        statusUpdatedAt: {
+          gte: DateTime.fromJSDate(filter.value.startDate as unknown as Date)
+            .startOf('day')
+            .toJSDate()
+        }
+      }
+    } else {
+      params.value.conditions = {
+        ...params.value.conditions,
+        statusUpdatedAt: undefined
+      }
+    }
+
+    if (filter.value.finalDate) {
+      params.value.conditions = {
+        ...params.value.conditions,
+        statusUpdatedAt: {
+          ...params.value.conditions.statusUpdatedAt,
+          lte: DateTime.fromJSDate(filter.value.finalDate as unknown as Date)
+            .endOf('day')
+            .toJSDate()
+        }
+      }
+    } else {
+      params.value.conditions = {
+        ...params.value.conditions,
+        statusUpdatedAt: undefined
       }
     }
 
@@ -73,7 +129,7 @@ export const useListPartnerOrders = () => {
 
   return {
     params,
-    orderNumber,
+    filter,
     data,
     isLoading,
     findOrders,

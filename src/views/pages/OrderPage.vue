@@ -23,6 +23,8 @@
             <p v-if="order?.paymentMethod === OrderPaymentMethods.CashLocation">
               {{ centsToCurrency(order?.changeValue!) }}
             </p>
+            <h4>Cliente</h4>
+            <p>{{ order?.customer?.name?.split(' ')[0] }}</p>
           </div>
           <div class="col-12 md:col-6">
             <h4>{{ formatAddress(order?.address!) }}</h4>
@@ -31,14 +33,14 @@
         </div>
 
         <div class="grid">
-          <div class="col-6 md:col" v-if="order?.status === OrderStatus.Created">
+          <div class="col-6 md:col" v-if="order?.status === OrderStatus.AwaitingPartner">
             <Button
               label="Aceitar Pedido"
               severity="warning"
               @click="acceptOrder(+route.params.partnerId)"
             />
           </div>
-          <div class="col-6 md:col" v-if="order?.status === OrderStatus.Created">
+          <div class="col-6 md:col" v-if="order?.status === OrderStatus.AwaitingPartner">
             <Button
               label="Recusar Pedido"
               severity="danger"
