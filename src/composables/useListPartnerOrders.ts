@@ -2,11 +2,12 @@ import { computed, ref } from 'vue'
 import { FindEntitiesPaging, FindEntitiesResponse, Order } from '@/services/api/types'
 import { Api } from '@/services/api/Api'
 import { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
-import router from '@/router'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 export const useListPartnerOrders = () => {
+  const router = useRouter()
   const route = useRoute()
+
   const partnerId = computed(() => (route.params.partnerId ? +route.params.partnerId : null))
   const params = ref<FindEntitiesPaging>({
     conditions: {},
@@ -61,12 +62,12 @@ export const useListPartnerOrders = () => {
 
   const goToOrder = async (partnerId: number, id?: number) => {
     if (id) {
-      await router.push({
+      const routeData = router.resolve({
         name: 'partner-order-details',
         params: { partnerId, id }
       })
 
-      return
+      window.open(routeData.href, '_blank')
     }
   }
 

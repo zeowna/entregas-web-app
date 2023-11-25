@@ -6,10 +6,12 @@ import { useToast } from 'primevue/usetoast'
 import { email, helpers, required } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import { useRouter } from 'vue-router'
+import { UserTypes } from '@/services/api/types'
 
 export const useSignIn = () => {
   const router = useRouter()
   const toast = useToast()
+  const user = computed(() => store.getters.getUser)
 
   const credentials = ref({
     email: '',
@@ -52,7 +54,19 @@ export const useSignIn = () => {
         life: 2000
       })
 
-      setTimeout(async () => await router.push('/'), 2000)
+      if (user.value.type === UserTypes.Partner) {
+        setTimeout(
+          async () =>
+            await router.push({
+              name: 'list-partner-orders',
+              params: { partnerId: user.value.partner.id }
+            }),
+          2000
+        )
+        return
+      }
+
+      setTimeout(async () => await router.push({ name: 'list-admin-users' }), 2000)
     } catch (err) {
       if (err instanceof Error) {
         toast.add({
@@ -79,7 +93,7 @@ export const useSignIn = () => {
         return
       }
 
-      const response = await Api.auth.forgotPassword(credentials.value.email)
+      await Api.auth.forgotPassword(credentials.value.email)
 
       toast.add({
         severity: 'success',

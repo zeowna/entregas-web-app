@@ -16,6 +16,13 @@
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <Button
+        v-if="user.type === UserTypes.Partner"
+        v-tooltip.bottom="`Ver dados do Parceiro`"
+        @click="goToPartner(user.partner.id)"
+        :label="user.partner.name"
+      />
+
       <button
         @click="goToMyData"
         class="p-link layout-topbar-button"
@@ -38,10 +45,12 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useLayout } from '@/layout/composables/layout'
 import { useRouter } from 'vue-router'
 import AppLogo from '@/layout/AppLogo.vue'
-import { useSignOut } from '@/composables'
+import { useListPartners, useSignOut } from '@/composables'
 import { store } from '@/store'
+import { UserTypes } from '@/services/api/types'
 
 const { onMenuToggle } = useLayout()
+const { goToPartner } = useListPartners()
 const user = computed(() => store.getters.getUser)
 
 const outsideClickListener = ref<any>(null)

@@ -2,15 +2,12 @@ import { reactive } from 'vue'
 import { io } from 'socket.io-client'
 
 export const state = reactive({
-  connected: false,
-  fooEvents: [],
-  barEvents: []
+  connected: false
 })
 
-// "undefined" means the URL will be computed from the `window.location` object
 const URL = import.meta.env.VITE_API_URI
 
-export const socket = io(URL)
+export const socket = io(URL, { autoConnect: false })
 
 socket.on('connect', () => {
   state.connected = true

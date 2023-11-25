@@ -5,7 +5,7 @@
         <DataTable
           :value="data.list"
           lazy
-          paginator
+          :paginator="!realTimeEnabled"
           :first="0"
           :rows="data.limit"
           :totalRecords="data.count"
@@ -16,7 +16,7 @@
           :sortOrder="-1"
         >
           <template #header>
-            <div class="flex flex-wrap align-items-center justify-content-between">
+            <div class="flex flex-wrap align-items-center justify-content-start">
               <h5>Listar Pedidos</h5>
             </div>
             <div class="flex justify-content-start">
@@ -129,6 +129,15 @@ const realTimeEnabled = ref(false)
 
 const enableRealtime = async () => {
   realTimeEnabled.value = true
+
+  params.value = {
+    conditions: {},
+    skip: 0,
+    limit: 1000,
+    sort: { statusUpdatedAt: -1 }
+  }
+
+  await findOrders(+route.params.partnerId)
 
   socket.connect()
 

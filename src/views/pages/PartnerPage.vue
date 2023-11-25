@@ -2,6 +2,7 @@
   <div class="grid" v-if="partner.id">
     <div class="col-12 md:col-4">
       <Button
+        v-if="user.type === UserTypes.Admin"
         label="Usuários"
         severity="info"
         icon="pi pi-users"
@@ -33,6 +34,7 @@
                       v-model="v$.name.$model"
                       id="name"
                       placeholder="Nome do Parceiro"
+                      :disabled="user.type !== UserTypes.Admin"
                     />
                     <FieldError :errors="v$.name.$errors" />
                   </div>
@@ -45,6 +47,7 @@
                       mask="99.999.999/9999-99"
                       unmask
                       placeholder="CNPJ do Parceiro"
+                      :disabled="user.type !== UserTypes.Admin"
                     />
                     <FieldError :errors="v$.cnpj.$errors" />
                   </div>
@@ -56,7 +59,7 @@
                     <label for="">Horário de encerramento</label>
                     <Calendar id="calendar-timeonly" v-model="v$.closingHours.$model" timeOnly />
                   </div>
-                  <div class="field col-12 md:col-6">
+                  <div class="field col-12 md:col-6" v-if="user.type === UserTypes.Admin">
                     <label for="status">Status</label>
                     <div class="grid">
                       <div class="field-radiobutton col-12 md:col-6">
@@ -189,17 +192,20 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useFindAddress, useSavePartner } from '@/composables'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
 import { useRoute, useRouter } from 'vue-router'
 import PictureUploader from '@/components/PictureUploader.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { UserTypes } from '@/services/api/types'
+import { store } from '@/store'
 
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()
+const user = computed(() => store.getters.getUser)
 
 const { isLoading, v$, partner, savePartner, file, findPartnerById, reset } = useSavePartner(toast)
 const { findAddressByCep } = useFindAddress()

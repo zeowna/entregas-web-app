@@ -1,13 +1,15 @@
 import { computed, ref } from 'vue'
-import { Partner, PartnerStatuses } from '@/services/api/types'
+import { Partner, PartnerStatuses, UserTypes } from '@/services/api/types'
 import { helpers, required } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import { Api } from '@/services/api/Api'
 import router from '@/router'
 import { ToastServiceMethods } from 'primevue/toastservice'
 import { NotFoundError } from '@/services/api/errors'
+import { store } from '@/store'
 
 const isLoading = ref(false)
+const user = computed(() => store.getters.getUser)
 const partner = ref<Partner>({
   name: '',
   cnpj: '',
@@ -149,6 +151,10 @@ const goToPartners = async (toast: ToastServiceMethods) => {
     detail: 'Parceiro salvo com sucesso',
     life: 2000
   })
+
+  if (user.value.type !== UserTypes.Admin) {
+    return
+  }
 
   await router.push({
     name: 'list-partners'

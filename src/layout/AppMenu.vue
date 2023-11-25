@@ -8,7 +8,7 @@ const user = computed(() => store.getters.getUser)
 
 const adminMenu = [
   {
-    label: 'Admin',
+    label: 'Usuários',
     items: [{ label: 'Listar Usuários Admin', icon: 'pi pi-user', to: '/admin/users' }]
   },
   { separator: true },
@@ -28,8 +28,24 @@ const adminMenu = [
 
 const partnerMenu = [
   {
-    label: 'Usuários',
+    label: 'Pedidos',
     items: [
+      {
+        label: 'Listar Pedidos',
+        icon: 'pi pi-shopping-cart',
+        to: `/partners/${(user.value as PartnerUser).partner?.id}/orders`
+      }
+    ]
+  },
+  { separator: true },
+  {
+    label: 'Parceiro',
+    items: [
+      {
+        label: 'Dados do Parceiro',
+        icon: 'pi pi-shopping-cart',
+        to: `/partners/update/${(user.value as PartnerUser).partner?.id}`
+      },
       {
         label: 'Listar Usuarios',
         icon: 'pi pi-user',
@@ -48,17 +64,7 @@ const partnerMenu = [
       }
     ]
   },
-  { separator: true },
-  {
-    label: 'Pedidos',
-    items: [
-      {
-        label: 'Listar Pedidos',
-        icon: 'pi pi-shopping-cart',
-        to: `/partners/${(user.value as PartnerUser).partner?.id}/orders`
-      }
-    ]
-  }
+  { separator: true }
 ]
 
 const menu = computed(() => {
