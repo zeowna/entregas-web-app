@@ -1,29 +1,31 @@
-This template should help get you started developing with Vue 3 in Vite.
+# TCC 2 - UFPR
 
-## Customize configuration
+## Alunos
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+José Lucas Alves dos Santos Chociai
 
-## Project Setup
+Lucas Wunderlich
 
-```sh
-npm install
+## Orientador
+
+Prof. Dr. Dieval Guizelini
+
+## Projeto
+
+Esse repositório versiona a Web app do Entregas
+
+## Instalaçao
+
+```bash
+$ npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Rodando a aplicação
 
-```sh
-npm run dev
-```
+```bash
+# Desenvolvimento
+$ npm run dev
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+# build para Produção
+$ npm run build --mode=production
 ```

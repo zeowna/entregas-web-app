@@ -192,7 +192,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useFindAddress, useSavePartner } from '@/composables'
 import { useToast } from 'primevue/usetoast'
 import FieldError from '@/components/FieldError.vue'
@@ -238,6 +238,10 @@ onMounted(async () => {
   if (route.params?.id) {
     await findPartnerById(+route.params?.id)
   }
+})
+
+onUnmounted(() => {
+  reset()
 })
 </script>
 
