@@ -25,7 +25,22 @@
             </div>
 
             <div class="col-12 md:col-9">
-              <Fieldset legend="Dados do Parceiro">
+              <Fieldset>
+                <template #legend>
+                  Dados do Parceiro&nbsp;
+                  <i
+                    v-if="user.type === UserTypes.Admin && !partner.isOnline"
+                    class="pi pi-circle-fill"
+                    style="color: #f44435 !important"
+                    v-tooltip="'Offline'" />
+
+                  <i
+                    v-if="user.type === UserTypes.Admin && partner.isOnline"
+                    class="pi pi-circle-fill"
+                    style="color: #c5e1a5 !important"
+                    v-tooltip="'Online'"
+                /></template>
+
                 <div class="grid">
                   <div class="field col-12 md:col-6">
                     <label for="name">Nome</label>

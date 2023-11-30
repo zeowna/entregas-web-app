@@ -18,10 +18,30 @@
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
       <Button
         v-if="user.type === UserTypes.Partner"
-        v-tooltip.bottom="`Ver dados do Parceiro`"
+        v-tooltip.bottom="'Ver dados do Parceiro'"
         @click="goToPartner(user.partner.id)"
         :label="user.partner.name"
       />
+
+      <button
+        v-if="user.type === UserTypes.Partner && !user.partner.isOnline"
+        class="p-link layout-topbar-button"
+        v-tooltip.bottom="'Offline'"
+        @click="setOnline"
+      >
+        <i class="pi pi-circle-fill" style="color: #f44435 !important"></i>
+        <span>Offline</span>
+      </button>
+
+      <button
+        v-if="user.type === UserTypes.Partner && user.partner.isOnline"
+        class="p-link layout-topbar-button"
+        v-tooltip.bottom="'Online'"
+        @click="setOffline"
+      >
+        <i class="pi pi-circle-fill" style="color: #c5e1a5 !important"></i>
+        <span>Online</span>
+      </button>
 
       <button
         @click="goToMyData"
@@ -38,6 +58,7 @@
       </button>
     </div>
   </div>
+  <LoadingSpinner :isLoading="isLoading" />
 </template>
 
 <script setup lang="ts">
@@ -45,12 +66,14 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useLayout } from '@/layout/composables/layout'
 import { useRouter } from 'vue-router'
 import AppLogo from '@/layout/AppLogo.vue'
-import { useListPartners, useSignOut } from '@/composables'
+import { useListPartners, useSavePartner, useSignOut } from '@/composables'
 import { store } from '@/store'
 import { UserTypes } from '@/services/api/types'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const { onMenuToggle } = useLayout()
 const { goToPartner } = useListPartners()
+const { setOnline, setOffline, isLoading } = useSavePartner()
 const user = computed(() => store.getters.getUser)
 
 const outsideClickListener = ref<any>(null)

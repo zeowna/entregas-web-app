@@ -14,4 +14,5 @@ export interface Partner extends Entity {
   status: PartnerStatuses
   pictureURI?: string
   address: Address
+  isOnline?: boolean
 }

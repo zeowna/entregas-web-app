@@ -7,6 +7,7 @@ import router from '@/router'
 import { ToastServiceMethods } from 'primevue/toastservice'
 import { NotFoundError } from '@/services/api/errors'
 import { store } from '@/store'
+import { ActionTypes } from '@/store/actions'
 
 const isLoading = ref(false)
 const user = computed(() => store.getters.getUser)
@@ -144,8 +145,8 @@ const updateAddress = async () => {
   }
 }
 
-const goToPartners = async (toast: ToastServiceMethods) => {
-  toast.add({
+const goToPartners = async (toast?: ToastServiceMethods) => {
+  toast?.add({
     severity: 'success',
     summary: 'Sucesso',
     detail: 'Parceiro salvo com sucesso',
@@ -161,7 +162,7 @@ const goToPartners = async (toast: ToastServiceMethods) => {
   })
 }
 
-const savePartner = (toast: ToastServiceMethods) => async () => {
+const savePartner = (toast?: ToastServiceMethods) => async () => {
   try {
     isLoading.value = true
 
@@ -184,7 +185,7 @@ const savePartner = (toast: ToastServiceMethods) => async () => {
     await createAddress()
     await goToPartners(toast)
   } catch (err) {
-    toast.add({
+    toast?.add({
       severity: 'error',
       summary: 'Erro ao Salvar',
       detail: (err as Error).message ?? 'Não foi possível salvar o Parceiro!',
@@ -195,7 +196,25 @@ const savePartner = (toast: ToastServiceMethods) => async () => {
   }
 }
 
-export const useSavePartner = (toast: ToastServiceMethods) => {
+const setOnline = async () => {
+  isLoading.value = true
+
+  await Api.partners.setOnline(user.value.partner.id)
+  await store.dispatch(ActionTypes.REFRESH_TOKEN, true)
+
+  isLoading.value = false
+}
+
+const setOffline = async () => {
+  isLoading.value = true
+
+  await Api.partners.setOffline(user.value.partner.id)
+  await store.dispatch(ActionTypes.REFRESH_TOKEN, true)
+
+  isLoading.value = false
+}
+
+export const useSavePartner = (toast?: ToastServiceMethods) => {
   return {
     isLoading,
     partner,
@@ -203,6 +222,8 @@ export const useSavePartner = (toast: ToastServiceMethods) => {
     v$,
     findPartnerById,
     savePartner: savePartner(toast),
-    reset
+    reset,
+    setOnline,
+    setOffline
   }
 }

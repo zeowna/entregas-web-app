@@ -32,7 +32,7 @@ export interface Actions {
     }
   ): Promise<User>
 
-  [ActionTypes.REFRESH_TOKEN](context: AugmentedActionContext, user: User): void
+  [ActionTypes.REFRESH_TOKEN](context: AugmentedActionContext, force: boolean): void
 
   [ActionTypes.SET_USER](context: AugmentedActionContext, user: User): void
 
@@ -53,7 +53,7 @@ export const actions: Actions & ActionTree<AppState, AppState> = {
     return user
   },
 
-  async [ActionTypes.REFRESH_TOKEN]({ dispatch }) {
+  async [ActionTypes.REFRESH_TOKEN]({ dispatch }, force = false) {
     const token = localStorage.getItem('token')
     dispatch(ActionTypes.SET_TOKEN, token)
 
@@ -64,13 +64,13 @@ export const actions: Actions & ActionTree<AppState, AppState> = {
         return
       }
 
-      const decoded = jwtDecode(token)
+      const decoded = jwtDecode<any>(token)
       const toExpire = DateTime.fromMillis(decoded.exp! * 1000)
       const now = DateTime.now()
 
       const diff = toExpire.diff(now, 'minutes').toObject()
 
-      if (diff.minutes! <= 30 || !user.value) {
+      if (diff.minutes! <= 30 || !user.value || force) {
         const { user, authorization_token } = await Api.auth.refreshToken(token as string)
 
         localStorage.setItem('token', authorization_token)

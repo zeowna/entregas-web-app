@@ -139,7 +139,7 @@ import {
   getOrderStatusColorWeb
 } from '@/utils'
 import { store } from '@/store'
-import { PartnerUser } from '@/services/api/types'
+import { Order, PartnerUser } from '@/services/api/types'
 import { socket } from '@/services/socket/Socket'
 import { DateTime } from 'luxon'
 
@@ -148,7 +148,7 @@ const router = useRouter()
 
 const { isLoading, params, filter, data, onSearch, onSort, onPage, findOrders, goToOrder } =
   useListPartnerOrders()
-const user = computed(() => store.getters.getUser)
+const user = computed<PartnerUser>(() => store.getters.getUser)
 
 const realTimeEnabled = ref(false)
 
@@ -164,7 +164,11 @@ const enableRealtime = async () => {
 
   await onSearch()
 
-  socket.on(`partner-order-updated-${user.value.partner.id}`, (updated) => {
+  socket.on(`partner-order-updated-${user.value?.partner?.id}`, (updated: Order) => {
+    if (updated?.partner?.id !== user.value?.partner?.id) {
+      return
+    }
+
     const found = data.value.list.findIndex(({ id }) => id === updated.id)
 
     if (found > -1) {
@@ -188,7 +192,7 @@ const disableRealTime = async () => {
 
   await findOrders(+route.params.partnerId)
 
-  socket.on(`partner-order-updated-${user.value.partner.id}`, () => {})
+  socket.on(`partner-order-updated-${user.value?.partner?.id}`, () => {})
 }
 
 onMounted(async () => {
