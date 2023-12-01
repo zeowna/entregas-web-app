@@ -153,6 +153,10 @@ const user = computed<PartnerUser>(() => store.getters.getUser)
 const realTimeEnabled = ref(false)
 
 const enableRealtime = async () => {
+  if (realTimeEnabled.value) {
+    return
+  }
+
   realTimeEnabled.value = true
   params.value.skip = 0
   params.value.limit = 1000
@@ -180,6 +184,10 @@ const enableRealtime = async () => {
 }
 
 const disableRealTime = async () => {
+  if (!realTimeEnabled.value) {
+    return
+  }
+
   filter.value.startDate = null
   filter.value.finalDate = null
   filter.value.orderNumber = null

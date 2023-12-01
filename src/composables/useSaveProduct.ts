@@ -35,6 +35,7 @@ const reset = () => {
     pictureURI: '',
     status: ProductStatus.Active
   }
+  file.value = null
   v$.value.$reset()
 }
 
