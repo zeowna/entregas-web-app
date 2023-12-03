@@ -72,7 +72,7 @@ const createPartnerProduct = async () => {
   const payload = {
     ...partnerProduct.value,
     name: partnerProduct.value.product!.name as string,
-    value: partnerProduct.value.value * 1000
+    value: partnerProduct.value.value * 100
   }
 
   const created = await Api.partners.products.create(partnerId.value as number, payload)
@@ -84,8 +84,6 @@ const createPartnerProduct = async () => {
 }
 
 const updatePartnerProduct = async () => {
-  console.log(partnerProduct.value.product!.name)
-
   const payload = {
     ...partnerProduct.value,
     name: partnerProduct.value.product!.name as string,

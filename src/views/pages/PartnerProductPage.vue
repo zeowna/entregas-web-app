@@ -131,7 +131,7 @@
                     <InputNumber
                       v-model="v$.value.$model"
                       id="value"
-                      :min="0"
+                      :min="0.99"
                       :maxFractionDigits="2"
                       prefix="R$"
                       locale="pt-BR"
@@ -152,7 +152,13 @@
                     <FieldError :errors="v$.inStockQuantity.$errors" />
                   </div>
                   <div class="field col-12 md:col-6">
-                    <label for="status">Status</label>
+                    <label for="status">
+                      Status
+                      <i
+                        class="pi pi-info-circle"
+                        v-tooltip="'Apenas o Administrator pode alterar o Status'"
+                      />
+                    </label>
                     <div class="grid">
                       <div class="field-radiobutton col-12 md:col-6">
                         <RadioButton
