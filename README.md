@@ -14,7 +14,7 @@ Prof. Dr. Dieval Guizelini
 
 Esse repositório versiona a Web app do Entregas
 
-## Instalaçao
+## Instalação
 
 ```bash
 $ npm install
@@ -28,4 +28,6 @@ $ npm run dev
 
 # build para Produção
 $ npm run build --mode=production
+
+# Depois abra pelo browser o index.html que está dentro da pasta dist
 ```
