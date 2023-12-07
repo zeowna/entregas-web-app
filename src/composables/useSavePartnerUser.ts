@@ -1,12 +1,14 @@
 import { computed, ref } from 'vue'
 import { PartnerUser } from '@/services/api/types'
-import { helpers, required } from '@vuelidate/validators'
+import { email, helpers, required } from '@vuelidate/validators'
 import { Api } from '@/services/api/Api'
 import { ToastServiceMethods } from 'primevue/toastservice'
 import { NotFoundError } from '@/services/api/errors'
 import router from '@/router'
 import { useVuelidate } from '@vuelidate/core'
 import { DateTime } from 'luxon'
+import { cpf } from 'cpf-cnpj-validator';
+
 
 const partnerId = ref<number | null>()
 
@@ -27,8 +29,14 @@ const file = ref<File | null>(null)
 const rules = computed(() => ({
   name: { required: helpers.withMessage('Nome é obrigatório', required) },
   birthday: { required: helpers.withMessage('Data de nascimento é obrigatório', required) },
-  cpf: { required: helpers.withMessage('CPF é obrigatório', required) },
-  email: { required: helpers.withMessage('E-mail é obrigatório', required) }
+  cpf: { 
+    required: helpers.withMessage('CPF é obrigatório', required),
+    valid: helpers.withMessage('CPF inválido', (value: string) => cpf.isValid(value)) 
+  },
+  email: { 
+    required: helpers.withMessage('E-mail é obrigatório', required),
+    email: helpers.withMessage('E-mail precisa ser um e-mail', email)
+  }
 }))
 
 const v$ = useVuelidate(rules, partnerUser)

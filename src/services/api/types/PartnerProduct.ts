@@ -12,7 +12,7 @@ export interface PartnerProduct extends Entity {
   partner?: Partner
   product?: Partial<Product>
   productId?: number
-  value: number
-  inStockQuantity: number
+  value: number | null
+  inStockQuantity: number | null
   status: PartnerProductStatus
 }

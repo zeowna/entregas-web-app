@@ -71,18 +71,18 @@
                       id="password"
                       placeholder="Senha do Usuário"
                     />
-                    <FieldError :errors="v$!.password!.$errors" />
+                    <FieldError :errors="v$!.password!.$errors" v-if="v$!.password"/>
                   </div>
 
                   <div class="field md:col-6 col-12" v-if="passwordFieldEnabled">
                     <label for="status">Confirmar senha</label>
                     <InputText
                       type="password"
-                      v-model="v$.passwordConfirmation!.$model"
+                      v-model="me.passwordConfirmation"
                       id="passwordConfirmation"
                       placeholder="Confirmar Senha do Usuário"
                     />
-                    <FieldError :errors="v$!.passwordConfirmation!.$errors" />
+                    <FieldError :errors="v$!.passwordConfirmation!.$errors" v-if="v$!.passwordConfirmation"/>
                   </div>
                 </div>
               </Fieldset>

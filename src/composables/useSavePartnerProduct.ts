@@ -12,8 +12,8 @@ const partnerId = ref<number | null>()
 
 const isLoading = ref(false)
 const partnerProduct = ref<PartnerProduct>({
-  value: 0,
-  inStockQuantity: 0,
+  value: null,
+  inStockQuantity: null,
   status: PartnerProductStatus.Active
 })
 
@@ -28,8 +28,8 @@ const v$ = useVuelidate(rules, partnerProduct)
 
 const reset = () => {
   partnerProduct.value = {
-    value: 0,
-    inStockQuantity: 0,
+    value: null,
+    inStockQuantity: null,
     status: PartnerProductStatus.Active
   }
 

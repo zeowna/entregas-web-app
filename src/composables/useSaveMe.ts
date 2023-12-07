@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import { helpers, required, sameAs } from '@vuelidate/validators'
+import { email, helpers, required, sameAs } from '@vuelidate/validators'
 import { Api } from '@/services/api/Api'
 import { ToastServiceMethods } from 'primevue/toastservice'
 import { NotFoundError } from '@/services/api/errors'
@@ -7,6 +7,8 @@ import router from '@/router'
 import { useVuelidate } from '@vuelidate/core'
 import { DateTime } from 'luxon'
 import { User } from '@/services/api/types'
+import { cpf } from 'cpf-cnpj-validator';
+
 
 const isLoading = ref(false)
 const passwordFieldEnabled = ref(false)
@@ -39,8 +41,14 @@ const passwordRules = computed(() => ({
 const rules = computed(() => ({
   name: { required: helpers.withMessage('Nome é obrigatório', required) },
   birthday: { required: helpers.withMessage('Data de nascimento é obrigatório', required) },
-  cpf: { required: helpers.withMessage('CPF é obrigatório', required) },
-  email: { required: helpers.withMessage('E-mail é obrigatório', required) },
+  cpf: { 
+    required: helpers.withMessage('CPF é obrigatório', required),
+    valid: helpers.withMessage('CPF inválido', (value: string) => cpf.isValid(value)) 
+  },
+  email: { 
+    required: helpers.withMessage('E-mail é obrigatório', required),
+    email: helpers.withMessage('E-mail precisa ser um e-mail', email)
+  },
   ...(passwordFieldEnabled.value ? passwordRules.value : {})
 }))
 
@@ -139,6 +147,8 @@ const saveMe = (toast: ToastServiceMethods) => async () => {
         detail: 'Usuário salvo com sucesso',
         life: 2000
       })
+
+      v$.value.$reset()
       return
     }
   } catch (err) {
