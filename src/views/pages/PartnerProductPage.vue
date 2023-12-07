@@ -151,7 +151,7 @@
                     />
                     <FieldError :errors="v$.inStockQuantity.$errors" />
                   </div>
-                  <div class="field col-12 md:col-6">
+                  <!-- <div class="field col-12 md:col-6">
                     <label for="status">
                       Status
                       <i
@@ -181,7 +181,7 @@
                         <label for="status-inactive" class="ml-2">Inativo</label>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </Fieldset>
             </div>
