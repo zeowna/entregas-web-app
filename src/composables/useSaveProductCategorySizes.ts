@@ -22,7 +22,9 @@ const productCategoryId = ref<number | null>()
 
 const reset = () => {
   isLoading.value = false
+  showCategoryForm.value = false
   productCategoryId.value = null
+  productCategorySize.value = { name: ''}
   data.value = {
     list: [],
     count: 0,
@@ -43,7 +45,7 @@ const findProductCategorySizes = async (id: number) => {
 
   isLoading.value = true
   data.value = await Api.products.categories.sizes.find(productCategoryId.value, {
-    sort: { name: 1 }
+    sort: { updatedAt: -1 }
   })
   isLoading.value = false
 }

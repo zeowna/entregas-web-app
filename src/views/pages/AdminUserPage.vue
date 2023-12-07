@@ -22,7 +22,7 @@
                       type="text"
                       v-model="v$.name.$model"
                       id="name"
-                      placeholder="Nome do Produto"
+                      placeholder="Nome do Usuário"
                     />
                     <FieldError :errors="v$.name.$errors" />
                   </div>

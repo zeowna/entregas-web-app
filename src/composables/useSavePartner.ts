@@ -1,13 +1,14 @@
 import { computed, ref } from 'vue'
 import { Partner, PartnerStatuses, UserTypes } from '@/services/api/types'
 import { helpers, required } from '@vuelidate/validators'
-import { useVuelidate } from '@vuelidate/core'
+import { ValidationRuleWithoutParams, useVuelidate } from '@vuelidate/core'
 import { Api } from '@/services/api/Api'
 import router from '@/router'
 import { ToastServiceMethods } from 'primevue/toastservice'
 import { NotFoundError } from '@/services/api/errors'
 import { store } from '@/store'
 import { ActionTypes } from '@/store/actions'
+import { DateTime } from 'luxon'
 
 const isLoading = ref(false)
 const user = computed(() => store.getters.getUser)
@@ -36,7 +37,27 @@ const rules = computed(() => ({
   cnpj: { required: helpers.withMessage('CNPJ é obrigatório', required) },
   openingHours: { required: helpers.withMessage('Horário de abertura é obrigatório', required) },
   closingHours: {
-    required: helpers.withMessage('Horário de encerramento é obrigatório', required)
+    required: helpers.withMessage('Horário de encerramento é obrigatório', required),
+    minValue: helpers.withMessage('Horário de encerramento tem que ser depois do Horário de abertura', (value: Date | string) => {
+
+    const openingHoursDt = (partner.value.openingHours as any) instanceof Date
+      ? DateTime.fromJSDate(partner.value.openingHours as any)
+      : DateTime.now().set({
+        hour: Number.parseInt(partner.value.openingHours.split(':')[0]),
+        minute: Number.parseInt(partner.value.openingHours.split(':')[1]),
+        second: 0
+      })
+
+    const closingHoursDt = value instanceof Date
+      ? DateTime.fromJSDate(value as Date)
+      : DateTime.now().set({
+        hour: Number.parseInt((value as string).split(':')[0]),
+        minute: Number.parseInt((value as string).split(':')[1]),
+        second: 0
+      })
+
+      return closingHoursDt.toJSDate() > openingHoursDt.toJSDate()
+  }), 
   },
   status: { required: helpers.withMessage('Status é obrigatório', required) },
   address: {
@@ -162,6 +183,20 @@ const goToPartners = async (toast?: ToastServiceMethods) => {
   })
 }
 
+const getTimeString = (date: string | Date) => {
+  if (date instanceof Date) {
+    console.log('here', date)
+    return DateTime.fromJSDate(date).toFormat('HH:mm')
+  }
+
+  if( partner.value.openingHours.length <= 5 ) {
+    return date as string
+  }
+
+
+  return DateTime.fromISO(date).toFormat('HH:mm')
+}
+
 const savePartner = (toast?: ToastServiceMethods) => async () => {
   try {
     isLoading.value = true
@@ -173,6 +208,12 @@ const savePartner = (toast?: ToastServiceMethods) => async () => {
     if (!formValidation) {
       throw new Error(v$.value.$errors.map((e) => e.$message).join())
     }
+
+
+    partner.value.openingHours = getTimeString(partner.value.openingHours)
+    partner.value.closingHours = getTimeString(partner.value.closingHours)
+
+    console.log(partner.value)
 
     if (partner.value.id) {
       await updatePartner()

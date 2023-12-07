@@ -21,14 +21,16 @@
             </div>
             <div class="flex flex-wrap justify-content-between">
               <Button label="Criar Categoria" @click="goToProductCategory()" />
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText
-                  v-model="categoryName"
-                  placeholder="Nome da Categoria"
-                  @blur="onSearch"
-                />
-              </span>
+              <form @submit.prevent="onSearch">
+                <span class="p-input-icon-left">
+                  <i class="pi pi-search" />
+                  <InputText
+                    v-model="categoryName"
+                    placeholder="Nome da Categoria"
+                  />
+                </span>
+                <Button type="submit" v-show="false" />
+              </form>
             </div>
           </template>
           <Column field="name" header="Nome" sortable></Column>

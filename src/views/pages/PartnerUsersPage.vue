@@ -31,10 +31,13 @@
                 <Button label="Criar Usuário" @click="goToPartnerUser(+route.params.partnerId)" />
               </div>
               <div class="flex justify-content-end">
-                <span class="p-input-icon-left">
-                  <i class="pi pi-search" />
-                  <InputText v-model="userName" placeholder="Nome do Usuário" @blur="onSearch" />
-                </span>
+                <form @submit.prevent="onSearch">
+                  <span class="p-input-icon-left">
+                    <i class="pi pi-search" />
+                    <InputText v-model="userName" placeholder="Nome do Usuário" />
+                  </span>
+                  <Button type="submit" v-show="false" />
+              </form>
               </div>
             </div>
           </template>

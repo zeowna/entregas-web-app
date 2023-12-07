@@ -24,10 +24,13 @@
             <div class="flex flex-wrap align-items-center justify-content-between">
               <Button label="Criar Produto" @click="goToProduct()" />
 
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText v-model="productName" placeholder="Nome do Produto" @blur="onSearch" />
-              </span>
+              <form @submit.prevent="onSearch">
+                <span class="p-input-icon-left">
+                  <i class="pi pi-search" />
+                  <InputText v-model="productName" placeholder="Nome do Produto" />
+                </span>
+                <Button type="submit" v-show="false" />
+            </form>
             </div>
           </template>
 

@@ -39,7 +39,8 @@
                     class="pi pi-circle-fill"
                     style="color: #c5e1a5 !important"
                     v-tooltip="'Online'"
-                /></template>
+                  />
+                </template>
 
                 <div class="grid">
                   <div class="field col-12 md:col-6">
@@ -69,10 +70,12 @@
                   <div class="field col-12 md:col-6">
                     <label for="">Horário de abertura</label>
                     <Calendar id="calendar-timeonly" v-model="v$.openingHours.$model" timeOnly />
+                    <FieldError :errors="v$.openingHours.$errors" />
                   </div>
                   <div class="field col-12 md:col-6">
                     <label for="">Horário de encerramento</label>
                     <Calendar id="calendar-timeonly" v-model="v$.closingHours.$model" timeOnly />
+                    <FieldError :errors="v$.closingHours.$errors" />
                   </div>
                   <div class="field col-12 md:col-6" v-if="user.type === UserTypes.Admin">
                     <label for="status">Status</label>

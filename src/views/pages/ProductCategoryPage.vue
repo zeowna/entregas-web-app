@@ -146,12 +146,12 @@ const {
   selectProductSize,
   showCategoryForm,
   saveProductCategorySize,
-  reset: resetProductcategorySize
+  reset: resetProductCategorySize
 } = useSaveProductCategorySizes(toast)
 
 onMounted(async () => {
   reset()
-  resetProductcategorySize()
+  resetProductCategorySize()
 
   if (route.params?.id) {
     await findProductCategoryById(+route.params?.id)
@@ -161,7 +161,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   reset()
-  resetProductcategorySize()
+  resetProductCategorySize()
 })
 </script>
 

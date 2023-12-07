@@ -21,10 +21,14 @@
             </div>
             <div class="flex flex-wrap justify-content-between">
               <Button label="Criar Usuário" @click="goToAdminUser()" />
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText v-model="userName" placeholder="Nome do Usuário" @blur="onSearch" />
-              </span>
+
+              <form @submit.prevent="onSearch">
+                <span class="p-input-icon-left">
+                  <i class="pi pi-search" />
+                  <InputText v-model="userName" placeholder="Nome do Usuário" />
+                </span>
+                <Button type="submit" v-show="false" />
+              </form>
             </div>
           </template>
           <Column header="Foto">

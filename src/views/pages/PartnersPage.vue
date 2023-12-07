@@ -38,6 +38,23 @@
             </template>
           </Column>
           <Column field="name" header="Nome" sortable></Column>
+          <Column field="isOnline" header="Online" sortable>
+            <template #body="slotProps">
+              <i
+                v-if="!slotProps.data?.isOnline"
+                class="pi pi-circle-fill"
+                style="color: #f44435 !important"
+                v-tooltip="'Offline'" 
+              />
+
+              <i
+                v-if="slotProps.data?.isOnline"
+                class="pi pi-circle-fill"
+                style="color: #c5e1a5 !important"
+                v-tooltip="'Online'"
+              />
+            </template>
+          </Column>
           <Column header="Endereço">
             <template #body="slotProps">
               {{ slotProps.data?.address?.street }} {{ slotProps.data?.address?.number }}
@@ -92,7 +109,7 @@
 import { onMounted } from 'vue'
 import { PrimeIcons } from 'primevue/api'
 import { useListPartners } from '@/composables'
-import { PartnerStatuses } from '@/services/api/types'
+import { PartnerStatuses, UserTypes } from '@/services/api/types'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
